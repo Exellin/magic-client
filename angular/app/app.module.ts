@@ -17,4 +17,5 @@ import { BoardComponent } from './board/board.component';
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+
+export class AppModule {}
