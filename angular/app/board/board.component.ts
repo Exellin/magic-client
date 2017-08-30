@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
+import { CardsService } from '../cards/cards.service';
+
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
@@ -7,12 +9,26 @@ import { Component, OnInit } from '@angular/core';
 })
 
 export class BoardComponent implements OnInit {
+  cardNames = [['nissa, worldwaker'], ['lightning bolt']];
+  deck = [];
 
-  constructor() {}
+  constructor(private cardsService: CardsService) {}
 
   ngOnInit() {
-    const canvas = document.querySelector('canvas');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    for (const cardName of this.cardNames) {
+      this.cardsService.getCard(cardName).subscribe(
+        res => {
+          for (const card of res.cards) {
+            if (card.imageUrl) {
+              this.deck.push(card);
+              break;
+            }
+          }
+        },
+        err => {
+          console.log(err);
+        }
+      );
+    }
   }
 }

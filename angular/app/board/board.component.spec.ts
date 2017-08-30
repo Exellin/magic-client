@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpModule } from '@angular/http';
 
 import { BoardComponent } from './board.component';
+import { CardsService } from '../cards/cards.service';
 
 describe('BoardComponent', () => {
   let component: BoardComponent;
@@ -8,7 +10,9 @@ describe('BoardComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BoardComponent ]
+      declarations: [BoardComponent],
+      imports: [HttpModule],
+      providers: [CardsService]
     })
     .compileComponents();
   }));
