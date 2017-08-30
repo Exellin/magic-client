@@ -20,7 +20,7 @@
       "prefix": "app",
       "styles": [
         "../node_modules/ng2-toastr/bundles/ng2-toastr.min.css",
-        "styles.css"
+        "styles.scss"
       ],
       "scripts": [
         "../node_modules/pusher-js/dist/web/pusher.min.js"
@@ -57,7 +57,8 @@
     }
   },
   "defaults": {
-    "styleExt": "css",
-    "component": {}
+    "styleExt": "scss",
+    "component": {
+    }
   }
 }
