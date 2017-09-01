@@ -1,7 +1,7 @@
 import * as express from 'express';
 
-import UsersController from './controllers/users';
-import User from './models/user';
+import UsersController from '../controllers/users';
+import User from '../models/user';
 
 export default function setRoutes(app) {
 

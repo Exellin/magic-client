@@ -6,7 +6,7 @@ import * as mongoose from 'mongoose';
 import * as passport from 'passport';
 import * as path from 'path';
 
-import setRoutes from './routes';
+import setRoutes from './config/routes';
 
 const app = express();
 
