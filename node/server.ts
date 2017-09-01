@@ -6,6 +6,8 @@ import * as mongoose from 'mongoose';
 import * as passport from 'passport';
 import * as path from 'path';
 
+import setRoutes from './routes';
+
 const app = express();
 
 app.set('port', process.env.PORT || 3000);
@@ -26,6 +28,8 @@ mongoose.connection.on('connected', () => {
 mongoose.connection.on('error', (err) => {
   console.log(`Database error: ${err}`);
 });
+
+setRoutes(app);
 
 app.listen(app.get('port'), () => {
   console.log(`Server started on port ${app.get('port')}`);
