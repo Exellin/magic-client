@@ -1,5 +1,4 @@
 import * as jwt from 'jsonwebtoken';
-import * as passport from 'passport';
 
 import User from '../models/user';
 
@@ -18,6 +17,31 @@ export default class UsersController {
       } else {
         res.json({success: true, msg: 'User registered'});
       }
+    });
+  }
+
+  login = (req, res) => {
+    User.findOne({ username: req.body.username }, (err, user) => {
+      if (!user) { return res.sendStatus(403); }
+
+      const passedUser = {
+        id: user._id,
+        username: user.username,
+        email: user.email
+      };
+
+      User.comparePassword(req.body.password, user.password, (error, isMatch) => {
+        if (!isMatch) { return res.sendStatus(403); }
+        const token = jwt.sign({ user: passedUser }, process.env.SECRET_TOKEN, {
+          expiresIn: 604800 // 1 week
+        });
+
+        res.json({
+          success: true,
+          token: `Bearer ${token}`,
+          user: passedUser
+        });
+      });
     });
   }
 }

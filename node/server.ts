@@ -3,19 +3,18 @@ import * as cors from 'cors';
 import * as dotenv from 'dotenv';
 import * as express from 'express';
 import * as mongoose from 'mongoose';
-import * as passport from 'passport';
 import * as path from 'path';
 
 import setRoutes from './config/routes';
 
 const app = express();
 
+dotenv.load({ path: '.env' });
+
 app.set('port', process.env.PORT || 3000);
 
 app.use(cors());
 app.use(bodyParser.json());
-
-dotenv.load({ path: '.env' });
 
 mongoose.connect(process.env.MONGODB_URI, {
   useMongoClient: true
