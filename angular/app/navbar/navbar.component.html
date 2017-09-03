@@ -1,0 +1,24 @@
+<nav>
+  <div class='nav-wrapper blue'>
+    <a href='/' class='brand-logo'>Magic Client</a>
+    <ul class='right'>
+      <li [routerLinkActive]="['active']" [routerLinkActiveOptions]='{exact:true}'>
+        <a routerLink='/login'>
+          Log In
+        </a>
+      </li>
+
+      <li [routerLinkActive]="['active']" [routerLinkActiveOptions]='{exact:true}'>
+        <a routerLink='/register'>
+          Register
+        </a>
+      </li>
+
+      <li [routerLinkActive]="['active']" [routerLinkActiveOptions]='{exact:true}'>
+        <a routerLink='/board'>
+          Board
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>

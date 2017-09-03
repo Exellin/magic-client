@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { CardsService } from '../cards/cards.service';
 
 @Component({
-  selector: 'app-board',
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss']
 })
