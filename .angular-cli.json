@@ -19,11 +19,15 @@
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "app",
       "styles": [
+        "styles.scss",
         "../node_modules/ng2-toastr/bundles/ng2-toastr.min.css",
-        "styles.scss"
+        "../node_modules/materialize-css/dist/css/materialize.css"
       ],
       "scripts": [
-        "../node_modules/pusher-js/dist/web/pusher.min.js"
+        "../node_modules/pusher-js/dist/web/pusher.min.js",
+        "../node_modules/jquery/dist/jquery.js",
+        "../node_modules/hammerjs/hammer.js",
+        "../node_modules/materialize-css/dist/js/materialize.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {
