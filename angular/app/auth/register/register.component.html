@@ -1,3 +1,44 @@
-<p>
-  register works!
-</p>
+<div class='container'>
+  <div class='card'>
+    <div class='card-content'>
+      <span class='card-title'>Register</span>
+      <div class='card-block'>
+        <form [formGroup]='registerForm' (ngSubmit)='register()'>
+
+          <div class='input-field'>
+            <input id='username' type='text' name='username' formControlName='username' [ngClass]="setClass('username')">
+            <label for='username'>Username</label>
+            <div ngxErrors='username'>
+              <div *ngFor='let error of usernameErrors' [ngxError]='error.name' [when]='error.rules' class='error'>
+                {{ error.text }}
+              </div>
+            </div>
+          </div>
+
+          <div class='input-field'>
+            <input id='email' type='email' name='email' formControlName='email' [ngClass]="setClass('email')">
+            <label for='email'>Email</label>
+            <div ngxErrors='email'>
+              <div *ngFor='let error of emailErrors' [ngxError]='error.name' [when]='error.rules' class='error'>
+                {{ error.text }}
+              </div>
+            </div>
+          </div>
+
+          <div class='input-field'>
+            <input id='password' type='password' name='password' formControlName='password' [ngClass]="setClass('password')">
+            <label for='password'>Password</label>
+            <div ngxErrors='password'>
+              <div *ngFor='let error of passwordErrors' [ngxError]='error.name' [when]='error.rules' class='error'>
+                {{ error.text }}
+              </div>
+            </div>
+          </div>
+
+          <button class='btn waves-effect' type='submit' [disabled]='!registerForm.valid'>
+            Register <i class='material-icons right'>send</i></button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

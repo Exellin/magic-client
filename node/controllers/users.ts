@@ -11,11 +11,25 @@ export default class UsersController {
     });
 
     newUser.save((err, user) => {
+      let errorMessage = '';
+      if (err && err.code === 11000 && err.message.includes('username')) {
+        errorMessage = 'username already exists';
+      }
+      if (err && err.code === 11000 && err.message.includes('email')) {
+        errorMessage = 'email already exists';
+      }
+
       if (err) {
-        console.log(err);
-        res.json({success: false, msg: 'Failed to register user'});
+        res.status(422).send({
+          status: 'error',
+          data: newUser,
+          error: errorMessage
+        });
       } else {
-        res.json({success: true, msg: 'User registered'});
+        res.status(200).send({
+          status: 'success',
+          data: user
+        });
       }
     });
   }
