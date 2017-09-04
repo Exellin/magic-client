@@ -6,8 +6,7 @@ import { AppComponent } from './app.component';
 import { BoardComponent } from './board/board.component';
 import { CardsService } from './cards/cards.service';
 import { NavbarComponent } from './navbar/navbar.component';
-import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
+import { AuthModule } from './auth/auth.module';
 
 describe('AppComponent', () => {
   beforeEach(async(() => {
@@ -15,11 +14,10 @@ describe('AppComponent', () => {
       declarations: [
         AppComponent,
         BoardComponent,
-        NavbarComponent,
-        LoginComponent,
-        RegisterComponent
+        NavbarComponent
       ],
       imports: [
+        AuthModule,
         HttpModule,
         RouterTestingModule
       ],
