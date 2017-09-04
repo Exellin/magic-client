@@ -6,6 +6,8 @@ import { NgxErrorsModule } from '@ultimate/ngxerrors';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { AuthService } from './auth.service';
+import { LoggedInGuard } from './logged-in.guard';
+import { LoggedOutGuard } from './logged-out.guard';
 
 @NgModule({
   declarations: [
@@ -19,6 +21,8 @@ import { AuthService } from './auth.service';
   ],
   providers: [
     AuthService,
+    LoggedInGuard,
+    LoggedOutGuard
   ]
 })
 

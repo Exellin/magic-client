@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { toast } from 'angular2-materialize';
@@ -43,9 +43,10 @@ export class RegisterComponent implements OnInit {
   password = new FormControl('', [Validators.required,
                                   Validators.minLength(6)]);
 
-  constructor(private formBuilder: FormBuilder,
-              private router: Router,
-              private authService: AuthService) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private router: Router,
+    private authService: AuthService) {}
 
   ngOnInit() {
     this.registerForm = this.formBuilder.group({
@@ -59,14 +60,14 @@ export class RegisterComponent implements OnInit {
     return { 'invalid': this[field].touched && !this[field].valid };
   }
 
-  register() {
+  registerSubmit() {
     this.authService.register(this.registerForm.value).subscribe(
       res => {
-        toast('You successfully registered');
+        toast('You successfully registered and can log in', 5000);
+        this.router.navigate(['/login']);
       },
       err => {
-        console.log(err);
-        toast(JSON.parse(err._body).error);
+        toast(JSON.parse(err._body).error, 5000);
       }
     );
   }

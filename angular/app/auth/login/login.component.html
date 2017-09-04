@@ -3,7 +3,7 @@
     <div class='card-content'>
       <span class='card-title'>Login</span>
       <div class='card-block'>
-        <form [formGroup]='loginForm' (ngSubmit)='login()'>
+        <form [formGroup]='loginForm' (ngSubmit)='loginSubmit()'>
 
           <div class='input-field'>
             <input id='email' type='email' name='email' formControlName='email'>

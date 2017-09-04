@@ -2,23 +2,25 @@
   <div class='nav-wrapper blue'>
     <a href='/' class='brand-logo'>Magic Client</a>
     <ul class='right'>
-      <li [routerLinkActive]="['active']" [routerLinkActiveOptions]='{exact:true}'>
+      <li [routerLinkActive]="['active']" [routerLinkActiveOptions]='{exact:true}' *ngIf='!isLoggedIn()'>
         <a routerLink='/login'>
           Log In
         </a>
       </li>
 
-      <li [routerLinkActive]="['active']" [routerLinkActiveOptions]='{exact:true}'>
+      <li [routerLinkActive]="['active']" [routerLinkActiveOptions]='{exact:true}' *ngIf='!isLoggedIn()'>
         <a routerLink='/register'>
           Register
         </a>
       </li>
 
-      <li [routerLinkActive]="['active']" [routerLinkActiveOptions]='{exact:true}'>
+      <li [routerLinkActive]="['active']" [routerLinkActiveOptions]='{exact:true}' *ngIf='isLoggedIn()'>
         <a routerLink='/board'>
           Board
         </a>
       </li>
+
+      <li *ngIf='isLoggedIn()'><a (click)='logoutClick()' href='#'>Logout</a></li>
     </ul>
   </div>
 </nav>
