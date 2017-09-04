@@ -13,10 +13,10 @@ export default class UsersController {
     newUser.save((err, user) => {
       let errorMessage = '';
       if (err && err.code === 11000 && err.message.includes('username')) {
-        errorMessage = 'username already exists';
+        errorMessage = 'Username already exists';
       }
       if (err && err.code === 11000 && err.message.includes('email')) {
-        errorMessage = 'email already exists';
+        errorMessage = 'Email already exists';
       }
 
       if (err) {
@@ -35,7 +35,7 @@ export default class UsersController {
   }
 
   login = (req, res) => {
-    User.findOne({ username: req.body.username }, (err, user) => {
+    User.findOne({ email: req.body.email }, (err, user) => {
       if (!user) { return res.sendStatus(403); }
 
       const passedUser = {
@@ -50,10 +50,9 @@ export default class UsersController {
           expiresIn: 604800 // 1 week
         });
 
-        res.json({
-          success: true,
-          token: `Bearer ${token}`,
-          user: passedUser
+        res.status(200).send({
+          status: 'success',
+          token: `Bearer ${token}`
         });
       });
     });
