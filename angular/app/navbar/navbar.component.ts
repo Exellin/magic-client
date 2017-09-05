@@ -11,11 +11,14 @@ import { AuthService } from '../auth/auth.service';
 })
 
 export class NavbarComponent implements OnInit {
+  username = '';
+
   constructor(
     private authService: AuthService,
     private router: Router) {}
 
   ngOnInit() {
+    this.username = this.authService.currentUser.username;
   }
 
   isLoggedIn() {

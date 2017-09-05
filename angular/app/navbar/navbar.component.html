@@ -20,6 +20,12 @@
         </a>
       </li>
 
+      <li [routerLinkActive]="['active']" [routerLinkActiveOptions]='{exact:true}' *ngIf='isLoggedIn()'>
+        <a routerLink='/user/{{ username }}'>
+          {{ username }}
+        </a>
+      </li>
+
       <li *ngIf='isLoggedIn()'><a (click)='logoutClick()' href='#'>Logout</a></li>
     </ul>
   </div>
