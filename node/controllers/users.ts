@@ -3,7 +3,7 @@ import * as jwt from 'jsonwebtoken';
 import User from '../models/user';
 
 export default class UsersController {
-  register = (req, res, next) => {
+  register = (req, res) => {
     const newUser = new User({
       email: req.body.email,
       username: req.body.username,
@@ -54,6 +54,17 @@ export default class UsersController {
           status: 'success',
           token: `Bearer ${token}`
         });
+      });
+    });
+  }
+
+  getUser = (req, res) => {
+    User.findOne({ username: req.params.username }, (err, user) => {
+      if (!user) { return res.sendStatus(404); }
+
+      res.status(200).send({
+        status: 'success',
+        data: user.username
       });
     });
   }

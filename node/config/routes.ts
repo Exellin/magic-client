@@ -12,6 +12,7 @@ export default function setRoutes(app) {
 
   router.post('/user', usersController.register);
   router.post('/login', usersController.login);
+  router.get('/user/:username', usersController.getUser);
 
   router.get('/protected', ensureToken, verifyToken, (req, res) => {
     res.json({user: req.user});
