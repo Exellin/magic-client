@@ -38,7 +38,7 @@ export default class UsersController {
     User.findOne({ email: req.body.email }, (err, user) => {
       if (!user) { return res.sendStatus(403); }
 
-      const passedUser = {
+      const encodedUser = {
         id: user._id,
         username: user.username,
         email: user.email
@@ -46,7 +46,7 @@ export default class UsersController {
 
       User.comparePassword(req.body.password, user.password, (error, isMatch) => {
         if (!isMatch) { return res.sendStatus(403); }
-        const token = jwt.sign({ user: passedUser }, process.env.SECRET_TOKEN, {
+        const token = jwt.sign({ user: encodedUser }, process.env.SECRET_TOKEN, {
           expiresIn: 604800 // 1 week
         });
 
@@ -62,9 +62,13 @@ export default class UsersController {
     User.findOne({ username: req.params.username }, (err, user) => {
       if (!user) { return res.sendStatus(404); }
 
+      const passedUser = {
+        username: user.username,
+      };
+
       res.status(200).send({
         status: 'success',
-        data: user.username
+        user: passedUser
       });
     });
   }

@@ -10,12 +10,15 @@ import { CardsService } from './cards/cards.service';
 import { NavbarComponent } from './navbar/navbar.component';
 import { RoutingModule } from './routing.module';
 import { AuthModule } from './auth/auth.module';
+import { ProfileComponent } from './profile/profile.component';
+import { ProfileService } from './profile/profile.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     BoardComponent,
     NavbarComponent,
+    ProfileComponent,
   ],
   imports: [
     AuthModule,
@@ -26,7 +29,8 @@ import { AuthModule } from './auth/auth.module';
     MaterializeModule
   ],
   providers: [
-    CardsService
+    CardsService,
+    ProfileService
   ],
   bootstrap: [AppComponent]
 })

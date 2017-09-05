@@ -4,13 +4,15 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent} from './auth/register/register.component';
 import { BoardComponent } from './board/board.component';
+import { ProfileComponent } from './profile/profile.component';
 import { LoggedInGuard } from './auth/logged-in.guard';
 import { LoggedOutGuard } from './auth/logged-out.guard';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [LoggedOutGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [LoggedOutGuard] },
-  { path: 'board', component: BoardComponent, canActivate: [LoggedInGuard] }
+  { path: 'board', component: BoardComponent, canActivate: [LoggedInGuard] },
+  { path: 'user/:username', component: ProfileComponent }
 ];
 
 @NgModule({

@@ -34,7 +34,7 @@ export class LoginComponent implements OnInit {
         this.authService.storeToken(res.token);
         this.authService.setCurrentUserFromToken(res.token);
         toast('Logged in successfully', 5000);
-        this.router.navigate(['/']);
+        this.router.navigate([`/user/${this.authService.currentUser.username}`]);
       },
       err => {
         toast('Invalid username or password', 5000);
