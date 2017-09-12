@@ -1,4 +1,3 @@
-import * as mongoose from 'mongoose';
 import Deck from '../models/deck';
 
 export default class DecksController {

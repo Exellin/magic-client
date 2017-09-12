@@ -1,4 +1,8 @@
-<div class='container'>
-  <h4 *ngIf='username'>{{ username }}</h4>
+<div *ngIf='!username' class='container'>
   <h4 *ngIf='!username'>Profile Not Found</h4>
+</div>
+
+<div *ngIf='username' class='container'>
+  <h4>{{ username }}</h4>
+  <app-decks-list [decks]='decks'></app-decks-list>
 </div>

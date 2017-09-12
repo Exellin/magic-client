@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 
 import { ProfileComponent } from './profile.component';
 import { ProfileService } from './profile.service';
+import { DecksListComponent } from '../decks//decks-list/decks-list.component';
 
 @NgModule({
   declarations: [
-    ProfileComponent
+    ProfileComponent,
+    DecksListComponent
   ],
   imports: [
     CommonModule

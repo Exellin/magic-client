@@ -1,6 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 
 import User from '../models/user';
+import Deck from '../models/deck';
 
 export default class UsersController {
   register = (req, res) => {
@@ -62,13 +63,18 @@ export default class UsersController {
     User.findOne({ username: req.params.username }, (err, user) => {
       if (!user) { return res.sendStatus(404); }
 
-      const passedUser = {
-        username: user.username,
-      };
+      Deck.find({owner: user._id}).exec((error, decks) => {
+        if (error) { return console.error(error); }
 
-      res.status(200).send({
-        status: 'success',
-        user: passedUser
+        const passedUser = {
+          username: user.username,
+          decks: decks
+        };
+
+        res.status(200).send({
+          status: 'success',
+          user: passedUser
+        });
       });
     });
   }

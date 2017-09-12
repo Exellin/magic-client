@@ -10,6 +10,7 @@ import { ProfileService} from './profile.service';
 
 export class ProfileComponent implements OnInit {
   username = '';
+  decks = [];
   paramsSubscription;
 
   constructor(
@@ -29,6 +30,7 @@ export class ProfileComponent implements OnInit {
     this.profileService.getUser(usernameQuery).subscribe(
       res => {
         this.username = res.user.username;
+        this.decks = res.user.decks;
       },
       err => {
         console.log(err);
