@@ -1,3 +1,3 @@
-<ul *ngIf='decks' class='collection'>
+<ul *ngIf='decks.length' class='collection'>
   <li *ngFor='let deck of decks' class='collection-item'>{{ deck.name }}</li>
 </ul>
