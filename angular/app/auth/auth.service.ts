@@ -7,12 +7,12 @@ import 'rxjs/add/operator/map';
 @Injectable()
 
 export class AuthService {
-  private headers = new Headers({'Content-Type': 'application/json'});
-  private options = new RequestOptions({headers: this.headers});
+  private headers = new Headers({ 'Content-Type': 'application/json' });
+  private options = new RequestOptions({ headers: this.headers });
 
   jwtHelper: JwtHelper = new JwtHelper();
 
-  currentUser;
+  currentUser = { id: '', username: '', email: '' };
 
   constructor(private http: Http) {
     const token = localStorage.getItem('token');
@@ -39,7 +39,7 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('token');
-    this.currentUser = null;
+    this.currentUser = { id: '', username: '', email: '' };
   }
 
   setCurrentUserFromToken(token) {
