@@ -7,11 +7,20 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 
 export class DecksListComponent implements OnInit {
-  @Input()
-  decks;
+  @Input() decks;
+  @Input() isCurrentUser;
+  isAdding = false;
 
   constructor() {}
 
   ngOnInit() {
+  }
+
+  showNewDeckForm() {
+    this.isAdding = true;
+  }
+
+  hideNewDeckForm() {
+    this.isAdding = false;
   }
 }

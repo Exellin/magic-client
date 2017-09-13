@@ -4,5 +4,5 @@
 
 <div *ngIf='username' class='container'>
   <h4>{{ username }}</h4>
-  <app-decks-list [decks]='decks'></app-decks-list>
+  <app-decks-list [decks]='decks' [isCurrentUser]='isCurrentUser'></app-decks-list>
 </div>
