@@ -6,6 +6,7 @@ export default class DecksController {
       name: req.body.name,
       owner: {
         _id: req.user.id,
+        username: req.user.username
       }
     });
 

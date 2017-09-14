@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
+import { AuthService } from '../../auth/auth.service';
 import { DeckService } from '../deck.service';
 
 @Component({
@@ -11,10 +12,12 @@ import { DeckService } from '../deck.service';
 
 export class DeckComponent implements OnInit {
   deck;
+  ownedByCurrentUser = false;
   paramsSubscription;
 
   constructor(
     private activatedRoute: ActivatedRoute,
+    private authService: AuthService,
     private deckService: DeckService
   ) {}
 
@@ -30,6 +33,10 @@ export class DeckComponent implements OnInit {
     this.deckService.getDeck(deckId).subscribe(
       res => {
         this.deck = res.data;
+
+        if (this.deck.owner._id === this.authService.currentUser.id) {
+          this.ownedByCurrentUser = true;
+        }
       }
     );
   }

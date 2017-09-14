@@ -3,5 +3,7 @@
 </div>
 
 <div *ngIf='deck' class='container'>
-  <h4>{{ deck.name }}</h4>
+  <h4>
+    {{ deck.name }} owned by <a routerLink='/user/{{ deck.owner.username }}'> {{ deck.owner.username }}</a>
+  </h4>
 </div>
