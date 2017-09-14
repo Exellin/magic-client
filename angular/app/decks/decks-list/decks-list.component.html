@@ -1,16 +1,28 @@
 <ul class='collection with-header'>
   <li class='collection-header'>
     <h5 class='deck-header'>Decks</h5>
-
-    <button *ngIf='!isAdding && isCurrentUser' class='btn-floating waves-effect green' (click)='showNewDeckForm()'>
-      <i class='material-icons'>add</i>
-    </button>
-
-    <app-deck-form *ngIf='isAdding && isCurrentUser'></app-deck-form>
-
-    <button *ngIf='isAdding && isCurrentUser' class='btn-floating waves-effect red' (click)='hideNewDeckForm()'>
-      <i class='material-icons'>remove</i>
-    </button>
   </li>
   <li *ngFor='let deck of decks' class='collection-item'>{{ deck.name }}</li>
 </ul>
+
+<div *ngIf='isCurrentUser' class='card'>
+  <div class='card-content'>
+    <span class='card-title'>Create a new deck</span>
+    <div class='card-block'>
+      <form [formGroup]='deckForm' (ngSubmit)='deckSubmit()'>
+        <div class='input-field inline'>
+          <input id='name' type='text' name='name' formControlName='name' [ngClass]="setClass('name')">
+          <label for='name'>Name</label>
+          <div ngxErrors='name'>
+            <div *ngFor='let error of nameErrors' [ngxError]='error.name' [when]='error.rules' class='error'>
+              {{ error.text }}
+            </div>
+          </div>
+        </div>
+
+        <button class='btn waves-effect' type='submit' [disabled]='!deckForm.valid'>Create Deck</button>
+      </form>
+    </div>
+  </div>
+</div>
+
