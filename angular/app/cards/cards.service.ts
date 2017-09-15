@@ -10,6 +10,6 @@ export class CardsService {
   constructor(private http: Http) {}
 
   getCard(cardName) {
-    return this.http.get(`https://api.magicthegathering.io/v1/cards?name="${cardName}"`).map(res => res.json());
+    return this.http.get(`https://api.magicthegathering.io/v1/cards?name="${cardName}"&contains=imageUrl`).map(res => res.json());
   }
 }

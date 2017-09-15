@@ -17,12 +17,7 @@ export class BoardComponent implements OnInit {
     for (const cardName of this.cardNames) {
       this.cardsService.getCard(cardName).subscribe(
         res => {
-          for (const card of res.cards) {
-            if (card.imageUrl) {
-              this.deck.push(card);
-              break;
-            }
-          }
+          this.deck.push(res.cards[0]);
         },
         err => {
           console.log(err);
