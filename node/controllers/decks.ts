@@ -26,7 +26,7 @@ export default class DecksController {
   }
 
   get = (req, res) => {
-    Deck.findById(req.params.id, (err, deck) => {
+    Deck.findById(req.params.id).populate('cards').exec((err, deck) => {
       if (!deck) { return res.sendStatus(404); }
 
       res.status(200).send({
