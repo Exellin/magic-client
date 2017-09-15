@@ -6,4 +6,36 @@
   <h4>
     {{ deck.name }} owned by <a routerLink='/user/{{ deck.owner.username }}'> {{ deck.owner.username }}</a>
   </h4>
+
+  <div *ngIf='ownedByCurrentUser' class='card'>
+    <div class='card-content'>
+      <span class='card-title'>Add Cards</span>
+      <div class='card-block'>
+        <form [formGroup]='addCardsForm' (ngSubmit)='addCardsSubmit()'>
+          <div class='input-field'>
+            <textarea name='new_card_list' formControlName='new_card_list' class='materialize-textarea'
+            placeholder='Example: 4 lightning bolt'></textarea>
+          </div>
+
+          <button class='btn waves-effect' type='submit' [disabled]='!addCardsForm.valid'>Add Cards</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <table class='bordered'>
+    <thead>
+      <tr>
+        <th>Quantity</th>
+        <th>Name</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor='let card of deck.cards'>
+        <td>{{ card.quantity }}</td>
+        <td>{{ card.name }}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
