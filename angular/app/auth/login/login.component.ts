@@ -32,9 +32,17 @@ export class LoginComponent implements OnInit {
     this.authService.login(this.loginForm.value).subscribe(
       res => {
         this.authService.storeToken(res.token);
-        this.authService.setCurrentUserFromToken(res.token);
         toast('Logged in successfully', 5000);
-        this.router.navigate([`/user/${this.authService.currentUser.username}`]);
+        this.authService.setCurrentUser();
+
+        this.authService.currentUser.subscribe(
+          currentUser => {
+            this.router.navigate([`/user/${currentUser.username}`]);
+          },
+          err => {
+            console.log(err);
+          }
+        );
       },
       err => {
         toast('Invalid username or password', 5000);

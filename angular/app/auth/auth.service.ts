@@ -3,6 +3,7 @@ import { Http, Headers, RequestOptions } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { JwtHelper, tokenNotExpired } from 'angular2-jwt';
 import 'rxjs/add/operator/map';
+import { Subject, BehaviorSubject } from 'rxjs/Rx';
 
 @Injectable()
 
@@ -12,13 +13,18 @@ export class AuthService {
 
   jwtHelper: JwtHelper = new JwtHelper();
 
-  currentUser = { id: '', username: '', email: '' };
+  currentUser$: Subject<any> = new BehaviorSubject<any>({});
 
   constructor(private http: Http) {
-    const token = localStorage.getItem('token');
-    if (token) {
-      this.setCurrentUserFromToken(token);
-    }
+    this.setCurrentUser();
+  }
+
+  emit(value) {
+    this.currentUser$.next(value);
+  }
+
+  get currentUser(): BehaviorSubject<any> {
+    return this.currentUser$ as BehaviorSubject<any>;
   }
 
   register(user): Observable<any> {
@@ -39,10 +45,15 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('token');
-    this.currentUser = { id: '', username: '', email: '' };
+    this.setCurrentUser();
   }
 
-  setCurrentUserFromToken(token) {
-    this.currentUser = this.jwtHelper.decodeToken(token).user;
+  setCurrentUser() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.emit(this.jwtHelper.decodeToken(token).user);
+    } else {
+      this.emit('');
+    }
   }
 }

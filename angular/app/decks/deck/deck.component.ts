@@ -46,9 +46,16 @@ export class DeckComponent implements OnInit {
       res => {
         this.deck = res.data;
 
-        if (this.deck.owner._id === this.authService.currentUser.id) {
-          this.ownedByCurrentUser = true;
-        }
+        this.authService.currentUser.subscribe(
+          currentUser => {
+            if (this.deck.owner._id === currentUser.id) {
+              this.ownedByCurrentUser = true;
+            }
+          },
+          err => {
+            console.log(err);
+          }
+        );
       }
     );
   }

@@ -13,7 +13,7 @@ export class ProfileComponent implements OnInit {
   username = '';
   decks = [];
   paramsSubscription;
-  isCurrentUser = false;
+  isCurrentUser;
 
   constructor(
     private authService: AuthService,
@@ -29,14 +29,22 @@ export class ProfileComponent implements OnInit {
   }
 
   setUserData(usernameQuery) {
+    this.isCurrentUser = false;
     this.profileService.getUser(usernameQuery).subscribe(
       res => {
         this.username = res.user.username;
         this.decks = res.user.decks;
 
-        if (this.username === this.authService.currentUser.username) {
-          this.isCurrentUser = true;
-        }
+        this.authService.currentUser.subscribe(
+          currentUser => {
+            if (this.username === currentUser.username) {
+              this.isCurrentUser = true;
+            }
+          },
+          err => {
+            console.log(err);
+          }
+        );
       }
     );
   }
