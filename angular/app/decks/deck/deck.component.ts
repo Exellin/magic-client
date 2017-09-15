@@ -118,7 +118,7 @@ export class DeckComponent implements OnInit {
   importCard(deckId, card) {
     this.cardsService.addCardToDeck(deckId, card).subscribe(
       res => {
-        this.deck.cards.push(card);
+        this.deck.cards.push(res.data);
       },
       err => {
         console.log(err);
