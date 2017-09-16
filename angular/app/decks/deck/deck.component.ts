@@ -78,6 +78,11 @@ export class DeckComponent implements OnInit {
         continue;
       }
 
+      if (parsedQuantity > 100) {
+        toast(`Can only import a max of 100 ${cardName} at a time`, 5000);
+        continue;
+      }
+
       const match = this.deck.cards.find((card) => {
         return card.name.toUpperCase() === cardName.toUpperCase();
       });
