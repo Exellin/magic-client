@@ -141,8 +141,7 @@ export class DeckComponent implements OnInit {
       res => {
         const fetchedCard = res.data;
         fetchedCard.quantity = quantity;
-        this.deck.cards.push(fetchedCard);
-        this.updateDeck(this.deck);
+        this.addCardToDeck(fetchedCard);
       },
       err => {
         console.log(err);
@@ -155,8 +154,7 @@ export class DeckComponent implements OnInit {
       res => {
         const savedCard = res.data;
         savedCard.quantity = quantity;
-        this.deck.cards.push(savedCard);
-        this.updateDeck(this.deck);
+        this.addCardToDeck(savedCard);
       },
       err => {
         console.log(err);
@@ -164,7 +162,8 @@ export class DeckComponent implements OnInit {
     );
   }
 
-  updateDeck(deck) {
+  addCardToDeck(card) {
+    this.deck.cards.push(card);
     this.deckService.updateDeck(this.deck).subscribe(
       res => {},
       err => {
