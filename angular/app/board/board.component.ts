@@ -15,7 +15,7 @@ export class BoardComponent implements OnInit {
 
   ngOnInit() {
     for (const cardName of this.cardNames) {
-      this.cardsService.getCard(cardName).subscribe(
+      this.cardsService.getCardFromApi(cardName).subscribe(
         res => {
           this.deck.push(res.cards[0]);
         },

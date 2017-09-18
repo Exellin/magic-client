@@ -21,9 +21,10 @@ export default function setRoutes(app) {
 
   router.post('/deck', ensureToken, verifyToken, decksController.create);
   router.get('/decks/:id', decksController.get);
+  router.put('/decks/:id', ensureToken, verifyToken, checkDeckOwnership, decksController.update);
 
-  router.post('/decks/:id/card', ensureToken, verifyToken, checkDeckOwnership, cardsController.create);
-  router.put('/decks/:id/cards/:card_id', ensureToken, verifyToken, checkDeckOwnership, cardsController.update);
+  router.post('/card', ensureToken, verifyToken, cardsController.create);
+  router.get('/cards/:card_name', ensureToken, verifyToken, cardsController.get);
 
   app.use('/api', router);
 }

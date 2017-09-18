@@ -89,7 +89,7 @@ export class DeckComponent implements OnInit {
 
       if (match) {
         match.quantity += parsedQuantity;
-        this.cardsService.updateCard(this.deck._id, match).subscribe(
+        this.deckService.updateDeck(this.deck).subscribe(
           res => {
             toast(`${match.name} quantity increased by ${parsedQuantity}`, 5000);
           },
@@ -98,36 +98,95 @@ export class DeckComponent implements OnInit {
           }
         );
       } else {
-        this.cardsService.getCard(cardName).subscribe(
-          res => {
-            const fetchedCard = res.cards[0];
-            if (fetchedCard) {
-              const cardToSave = {
-                quantity: parsedQuantity,
-                name: fetchedCard.name,
-                imageUrl: fetchedCard.imageUrl
-              };
-              this.importCard(this.deck._id, cardToSave);
-            } else {
-              toast(`${cardName} could not be imported`, 5000);
-            }
-          },
-          err => {
-            console.log(err);
+        const checkCardPromise = this.checkCardExistence(cardName);
+
+        checkCardPromise.then((cardExists) => {
+          if (cardExists) {
+            this.importCardFromDataBase(cardName, parsedQuantity);
+          } else {
+            this.importCardFromApi(cardName, parsedQuantity);
           }
-        );
+        });
+
+        checkCardPromise.catch((err) => {
+          console.log(err);
+        });
       }
     }
   }
 
-  importCard(deckId, card) {
-    this.cardsService.addCardToDeck(deckId, card).subscribe(
+  importCardFromApi(cardName, quantity) {
+    this.cardsService.getCardFromApi(cardName).subscribe(
       res => {
-        this.deck.cards.push(res.data);
+        const fetchedCard = res.cards[0];
+        if (fetchedCard) {
+          const cardToSave = {
+            name: fetchedCard.name,
+            imageUrl: fetchedCard.imageUrl
+          };
+
+          this.saveCard(cardToSave, quantity);
+        } else {
+          toast(`${cardName} could not be imported`, 5000);
+        }
       },
       err => {
         console.log(err);
       }
     );
+  }
+
+  importCardFromDataBase(cardName, quantity) {
+    this.cardsService.getCardFromDatabase(cardName).subscribe(
+      res => {
+        const fetchedCard = res.data;
+        fetchedCard.quantity = quantity;
+        this.deck.cards.push(fetchedCard);
+        this.updateDeck(this.deck);
+      },
+      err => {
+        console.log(err);
+      }
+    );
+  }
+
+  saveCard(card, quantity) {
+    this.cardsService.saveCard(card).subscribe(
+      res => {
+        const savedCard = res.data;
+        savedCard.quantity = quantity;
+        this.deck.cards.push(savedCard);
+        this.updateDeck(this.deck);
+      },
+      err => {
+        console.log(err);
+      }
+    );
+  }
+
+  updateDeck(deck) {
+    this.deckService.updateDeck(this.deck).subscribe(
+      res => {},
+      err => {
+        console.log(err);
+      }
+    );
+  }
+
+  checkCardExistence(cardName) {
+    return new Promise((resolve, reject) => {
+      this.cardsService.getCardFromDatabase(cardName).subscribe(
+        res => {
+          if (res.data) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        },
+        err => {
+          reject(err);
+        }
+      );
+    });
   }
 }

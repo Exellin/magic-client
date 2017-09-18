@@ -3,33 +3,37 @@ import Card from '../models/card';
 
 export default class CardsController {
   create = (req, res) => {
-    Deck.findById(req.params.id, (err, deck) => {
-      if (!deck) { return res.sendStatus(404); }
+    const newCard = new Card(req.body);
 
-      const newCard = new Card(req.body);
-
-      newCard.save((error, card) => {
-        if (error) {
-          res.status(422).send({
-            status: 'error',
-            data: newCard
-          });
-        } else {
-          deck.cards.push(card);
-          deck.save();
-          res.status(200).send({
-            status: 'success',
-            data: card
-          });
-        }
-      });
+    newCard.save((error, card) => {
+      if (error) {
+        res.status(422).send({
+          status: 'error',
+          data: newCard
+        });
+      } else {
+        res.status(200).send({
+          status: 'success',
+          data: card
+        });
+      }
     });
   }
 
+  get = (req, res) => {
+    Card.findOne({ name: req.params.card_name }, (err, card) => {
+      if (err) { return console.error(err); }
+
+      res.status(200).send({
+        status: 'success',
+        data: card
+      });
+    }).collation({ locale: 'en', strength: 1 }); // performs case insensitive search
+  }
+
   update = (req, res) => {
-    console.log(req.body);
     Card.findByIdAndUpdate(req.params.card_id, req.body, (err) => {
-      if (err) { return res.sendStatus(422); }
+      if (err) { return console.error(err); }
       res.sendStatus(200);
     });
   }

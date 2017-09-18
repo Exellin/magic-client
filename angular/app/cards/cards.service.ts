@@ -13,16 +13,16 @@ export class CardsService {
 
   constructor(private http: Http) {}
 
-  getCard(cardName) {
+  getCardFromApi(cardName): Observable<any> {
     return this.http.get(`https://api.magicthegathering.io/v1/cards?name="${cardName}"&contains=imageUrl&pageSize=1`).map(
       res => res.json());
   }
 
-  addCardToDeck(deckId, card) {
-    return this.http.post(`http://localhost:3000/api/decks/${deckId}/card`, card, this.options).map(res => res.json());
+  getCardFromDatabase(cardName): Observable<any> {
+    return this.http.get(`http://localhost:3000/api/cards/${cardName}`, this.options).map(res => res.json());
   }
 
-  updateCard(deckId, card) {
-    return this.http.put(`http://localhost:3000/api/decks/${deckId}/cards/${card._id}`, card, this.options);
+  saveCard(card): Observable<any> {
+    return this.http.post('http://localhost:3000/api/card', card, this.options).map(res => res.json());
   }
 }

@@ -11,8 +11,11 @@ const DeckSchema = mongoose.Schema({
   },
   cards: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Card'
+      _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Card'
+      },
+      quantity: { type: Number, required: true }
     }
   ]
 });

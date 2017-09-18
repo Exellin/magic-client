@@ -18,4 +18,8 @@ export class DeckService {
   getDeck(deckId): Observable<any> {
     return this.http.get(`http://localhost:3000/api/decks/${deckId}`).map(res => res.json());
   }
+
+  updateDeck(deck): Observable<any> {
+    return this.http.put(`http://localhost:3000/api/decks/${deck._id}`, deck, this.options);
+  }
 }
