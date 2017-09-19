@@ -31,13 +31,14 @@ export default class DecksController {
       if (!deck) { return res.sendStatus(404); }
       const properties = ['_id', 'name', 'layout', 'cmc', 'colors', 'colorIdentity', 'type', 'supertypes', 'types', 'subtypes', 'rarity',
                           'setCode', 'setName', 'text', 'flavor', 'number', 'power', 'toughness', 'loyalty', 'legalities', 'multiverseid',
-                          'names', 'manaCost', 'imageUrls', 'rulings', 'printings'];
+                          'names', 'manaCost', 'rulings', 'printings'];
 
       const cardsToSend = [];
 
       for (const card of deck.cards) {
         const cardToSend = {
           quantity: card.quantity,
+          imageUrls: card.imageUrls
         };
 
         for (const property of properties) {

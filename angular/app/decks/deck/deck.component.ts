@@ -125,11 +125,6 @@ export class DeckComponent implements OnInit {
                               'names', 'manaCost', 'rulings', 'printings'];
 
           const cardToSave = {
-            imageUrls: {
-              small: `https://img.scryfall.com/cards/small/en/${fetchedCard.set.toLowerCase()}/${fetchedCard.number}.jpg`,
-              normal: `https://img.scryfall.com/cards/normal/en/${fetchedCard.set.toLowerCase()}/${fetchedCard.number}.jpg`,
-              large: `https://img.scryfall.com/cards/large/en/${fetchedCard.set.toLowerCase()}/${fetchedCard.number}.jpg`
-            },
             setCode: fetchedCard.set
           };
 
@@ -154,8 +149,7 @@ export class DeckComponent implements OnInit {
     this.cardsService.getCardFromDatabase(cardName).subscribe(
       res => {
         const fetchedCard = res.data;
-        fetchedCard.quantity = quantity;
-        this.addCardToDeck(fetchedCard);
+        this.addCardToDeck(fetchedCard, quantity);
       },
       err => {
         console.log(err);
@@ -167,8 +161,7 @@ export class DeckComponent implements OnInit {
     this.cardsService.saveCard(card).subscribe(
       res => {
         const savedCard = res.data;
-        savedCard.quantity = quantity;
-        this.addCardToDeck(savedCard);
+        this.addCardToDeck(savedCard, quantity);
       },
       err => {
         console.log(err);
@@ -176,7 +169,15 @@ export class DeckComponent implements OnInit {
     );
   }
 
-  addCardToDeck(card) {
+  addCardToDeck(card, quantity) {
+    card.quantity = quantity;
+    card.imageUrls = {};
+    const imageSizes = ['small', 'normal', 'large'];
+
+    for (const size of imageSizes) {
+      card.imageUrls[size] = `https://img.scryfall.com/cards/${size}/en/${card.setCode.toLowerCase()}/${card.number}.jpg`;
+    }
+
     this.deck.cards.push(card);
     this.deckService.updateDeck(this.deck).subscribe(
       res => {},

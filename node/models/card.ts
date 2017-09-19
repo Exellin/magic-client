@@ -28,13 +28,6 @@ const CardSchema = mongoose.Schema({
   multiverseid: { type: Number, required: true },
   names: [{ type: String }],
   manaCost: { type: String },
-  imageUrls: [
-    {
-      small: { type: String, required: true },
-      normal: { type: String, required: true },
-      large: { type: String, required: true }
-    }
-  ],
   rulings: [
     {
       date: { type: String },
