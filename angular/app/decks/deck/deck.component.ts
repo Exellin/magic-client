@@ -120,32 +120,19 @@ export class DeckComponent implements OnInit {
       res => {
         const fetchedCard = res.cards[0];
         if (fetchedCard) {
+          const properties = ['name', 'layout', 'cmc', 'colors', 'colorIdentity', 'type', 'supertypes', 'types', 'subtypes', 'rarity',
+                              'setName', 'text', 'flavor', 'power', 'toughness', 'loyalty', 'legalities', 'multiverseid',
+                              'names', 'manaCost', 'imageUrl', 'rulings', 'printings'];
+
           const cardToSave = {
-            name: fetchedCard.name,
-            layout: fetchedCard.layout,
-            cmc: fetchedCard.cmc,
-            colors: fetchedCard.colors,
-            colorIdentity: fetchedCard.colorIdentity,
-            type: fetchedCard.type,
-            supertypes: fetchedCard.supertypes,
-            types: fetchedCard.types,
-            subtypes: fetchedCard.subtypes,
-            rarity: fetchedCard.rarity,
-            setCode: fetchedCard.set,
-            setName: fetchedCard.setName,
-            text: fetchedCard.text,
-            flavor: fetchedCard.flavor,
-            power: fetchedCard.power,
-            toughness: fetchedCard.toughness,
-            loyalty: fetchedCard.loyalty,
-            legalities: fetchedCard.legalities,
-            multiverseid: fetchedCard.multiverseid,
-            names: fetchedCard.names,
-            manaCost: fetchedCard.manaCost,
-            imageUrl: fetchedCard.imageUrl,
-            rulings: fetchedCard.rulings,
-            printings: fetchedCard.printings
+            setCode: fetchedCard.set
           };
+
+          for (const property of properties) {
+            if (fetchedCard.hasOwnProperty(property)) {
+              cardToSave[property] = fetchedCard[property];
+            }
+          }
 
           this.saveCard(cardToSave, quantity);
         } else {

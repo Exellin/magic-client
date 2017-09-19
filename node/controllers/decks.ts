@@ -29,38 +29,22 @@ export default class DecksController {
   get = (req, res) => {
     Deck.findById(req.params.id).populate({path: 'cards._id', model: 'Card'}).lean().exec((err, deck) => {
       if (!deck) { return res.sendStatus(404); }
+      const properties = ['_id', 'name', 'layout', 'cmc', 'colors', 'colorIdentity', 'type', 'supertypes', 'types', 'subtypes', 'rarity',
+                          'setCode', 'setName', 'text', 'flavor', 'power', 'toughness', 'loyalty', 'legalities', 'multiverseid',
+                          'names', 'manaCost', 'imageUrl', 'rulings', 'printings'];
 
       const cardsToSend = [];
 
       for (const card of deck.cards) {
         const cardToSend = {
           quantity: card.quantity,
-          _id: card._id._id,
-          name: card._id.name,
-          layout: card._id.layout,
-          cmc: card._id.cmc,
-          colors: card._id.colors,
-          colorIdentity: card._id.colorIdentity,
-          type: card._id.type,
-          supertypes: card._id.supertypes,
-          types: card._id.types,
-          subtypes: card._id.subtypes,
-          rarity: card._id.rarity,
-          setCode: card._id.setCode,
-          setName: card._id.setName,
-          text: card._id.text,
-          flavor: card._id.flavor,
-          power: card._id.power,
-          toughness: card._id.toughness,
-          loyalty: card._id.loyalty,
-          legalities: card._id.legalities,
-          multiverseid: card._id.multiverseid,
-          names: card._id.names,
-          manaCost: card._id.manaCost,
-          imageUrl: card._id.imageUrl,
-          rulings: card._id.rulings,
-          printings: card._id.printings
         };
+
+        for (const property of properties) {
+          if (card._id.hasOwnProperty(property)) {
+            cardToSend[property] = card._id[property];
+          }
+        }
 
         cardsToSend.push(cardToSend);
       }
