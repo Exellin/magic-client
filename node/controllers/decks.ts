@@ -34,10 +34,32 @@ export default class DecksController {
 
       for (const card of deck.cards) {
         const cardToSend = {
-          _id: card._id._id,
           quantity: card.quantity,
+          _id: card._id._id,
           name: card._id.name,
-          imageUrl: card._id.imageUrl
+          layout: card._id.layout,
+          cmc: card._id.cmc,
+          colors: card._id.colors,
+          colorIdentity: card._id.colorIdentity,
+          type: card._id.type,
+          supertypes: card._id.supertypes,
+          types: card._id.types,
+          subtypes: card._id.subtypes,
+          rarity: card._id.rarity,
+          setCode: card._id.setCode,
+          setName: card._id.setName,
+          text: card._id.text,
+          flavor: card._id.flavor,
+          power: card._id.power,
+          toughness: card._id.toughness,
+          loyalty: card._id.loyalty,
+          legalities: card._id.legalities,
+          multiverseid: card._id.multiverseid,
+          names: card._id.names,
+          manaCost: card._id.manaCost,
+          imageUrl: card._id.imageUrl,
+          rulings: card._id.rulings,
+          printings: card._id.printings
         };
 
         cardsToSend.push(cardToSend);

@@ -122,7 +122,29 @@ export class DeckComponent implements OnInit {
         if (fetchedCard) {
           const cardToSave = {
             name: fetchedCard.name,
-            imageUrl: fetchedCard.imageUrl
+            layout: fetchedCard.layout,
+            cmc: fetchedCard.cmc,
+            colors: fetchedCard.colors,
+            colorIdentity: fetchedCard.colorIdentity,
+            type: fetchedCard.type,
+            supertypes: fetchedCard.supertypes,
+            types: fetchedCard.types,
+            subtypes: fetchedCard.subtypes,
+            rarity: fetchedCard.rarity,
+            setCode: fetchedCard.set,
+            setName: fetchedCard.setName,
+            text: fetchedCard.text,
+            flavor: fetchedCard.flavor,
+            power: fetchedCard.power,
+            toughness: fetchedCard.toughness,
+            loyalty: fetchedCard.loyalty,
+            legalities: fetchedCard.legalities,
+            multiverseid: fetchedCard.multiverseid,
+            names: fetchedCard.names,
+            manaCost: fetchedCard.manaCost,
+            imageUrl: fetchedCard.imageUrl,
+            rulings: fetchedCard.rulings,
+            printings: fetchedCard.printings
           };
 
           this.saveCard(cardToSave, quantity);
