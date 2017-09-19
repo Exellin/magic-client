@@ -8,15 +8,19 @@ import { Subject, BehaviorSubject } from 'rxjs/Rx';
 @Injectable()
 
 export class AuthService {
-  private headers = new Headers({ 'Content-Type': 'application/json' });
-  private options = new RequestOptions({ headers: this.headers });
-
   jwtHelper: JwtHelper = new JwtHelper();
 
   currentUser$: Subject<any> = new BehaviorSubject<any>({});
 
   constructor(private http: Http) {
     this.setCurrentUser();
+  }
+
+  setHeaders(): RequestOptions {
+    const headers: Headers = new Headers();
+    headers.append('Content_Type', 'application/json');
+    const options = new RequestOptions({ headers: headers });
+    return options;
   }
 
   emit(value) {
@@ -28,11 +32,11 @@ export class AuthService {
   }
 
   register(user): Observable<any> {
-    return this.http.post('http://localhost:3000/api/user', user, this.options).map(res => res.json());
+    return this.http.post('http://localhost:3000/api/user', user, this.setHeaders()).map(res => res.json());
   }
 
   login(credentials): Observable<any> {
-    return this.http.post('http://localhost:3000/api/login', credentials, this.options).map(res => res.json());
+    return this.http.post('http://localhost:3000/api/login', credentials, this.setHeaders()).map(res => res.json());
   }
 
   storeToken(token) {

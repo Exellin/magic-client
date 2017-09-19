@@ -4,15 +4,18 @@ import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class DeckService {
-  private token = localStorage.getItem('token');
-  private headers = new Headers({ 'Content-Type': 'application/json',
-                                  'Authorization': this.token });
-  private options = new RequestOptions({ headers: this.headers });
-
   constructor(private http: Http) {}
 
+  setHeaders(): RequestOptions {
+    const headers: Headers = new Headers();
+    headers.append('Content_Type', 'application/json');
+    headers.append('Authorization', localStorage.getItem('token'));
+    const options = new RequestOptions({ headers: headers });
+    return options;
+  }
+
   createDeck(deck): Observable<any> {
-    return this.http.post('http://localhost:3000/api/deck', deck, this.options).map(res => res.json());
+    return this.http.post('http://localhost:3000/api/deck', deck, this.setHeaders()).map(res => res.json());
   }
 
   getDeck(deckId): Observable<any> {
@@ -20,6 +23,6 @@ export class DeckService {
   }
 
   updateDeck(deck): Observable<any> {
-    return this.http.put(`http://localhost:3000/api/decks/${deck._id}`, deck, this.options);
+    return this.http.put(`http://localhost:3000/api/decks/${deck._id}`, deck, this.setHeaders());
   }
 }
