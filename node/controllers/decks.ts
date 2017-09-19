@@ -30,8 +30,8 @@ export default class DecksController {
     Deck.findById(req.params.id).populate({path: 'cards._id', model: 'Card'}).lean().exec((err, deck) => {
       if (!deck) { return res.sendStatus(404); }
       const properties = ['_id', 'name', 'layout', 'cmc', 'colors', 'colorIdentity', 'type', 'supertypes', 'types', 'subtypes', 'rarity',
-                          'setCode', 'setName', 'text', 'flavor', 'power', 'toughness', 'loyalty', 'legalities', 'multiverseid',
-                          'names', 'manaCost', 'imageUrl', 'rulings', 'printings'];
+                          'setCode', 'setName', 'text', 'flavor', 'number', 'power', 'toughness', 'loyalty', 'legalities', 'multiverseid',
+                          'names', 'manaCost', 'imageUrls', 'rulings', 'printings'];
 
       const cardsToSend = [];
 

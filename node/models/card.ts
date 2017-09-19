@@ -15,6 +15,7 @@ const CardSchema = mongoose.Schema({
   setName: { type: String, required: true },
   text: { type: String },
   flavor: { type: String },
+  number: { type: Number, required: true },
   power: { type: String },
   toughness: { type: String },
   loyalty: { type: Number },
@@ -27,7 +28,13 @@ const CardSchema = mongoose.Schema({
   multiverseid: { type: Number, required: true },
   names: [{ type: String }],
   manaCost: { type: String },
-  imageUrl: { type: String, required: true },
+  imageUrls: [
+    {
+      small: { type: String, required: true },
+      normal: { type: String, required: true },
+      large: { type: String, required: true }
+    }
+  ],
   rulings: [
     {
       date: { type: String },

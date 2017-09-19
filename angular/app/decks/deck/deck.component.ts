@@ -121,10 +121,15 @@ export class DeckComponent implements OnInit {
         const fetchedCard = res.cards[0];
         if (fetchedCard) {
           const properties = ['name', 'layout', 'cmc', 'colors', 'colorIdentity', 'type', 'supertypes', 'types', 'subtypes', 'rarity',
-                              'setName', 'text', 'flavor', 'power', 'toughness', 'loyalty', 'legalities', 'multiverseid',
-                              'names', 'manaCost', 'imageUrl', 'rulings', 'printings'];
+                              'setName', 'text', 'flavor', 'number', 'power', 'toughness', 'loyalty', 'legalities', 'multiverseid',
+                              'names', 'manaCost', 'rulings', 'printings'];
 
           const cardToSave = {
+            imageUrls: {
+              small: `https://img.scryfall.com/cards/small/en/${fetchedCard.set.toLowerCase()}/${fetchedCard.number}.jpg`,
+              normal: `https://img.scryfall.com/cards/normal/en/${fetchedCard.set.toLowerCase()}/${fetchedCard.number}.jpg`,
+              large: `https://img.scryfall.com/cards/large/en/${fetchedCard.set.toLowerCase()}/${fetchedCard.number}.jpg`
+            },
             setCode: fetchedCard.set
           };
 
