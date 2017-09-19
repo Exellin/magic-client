@@ -63,12 +63,7 @@ export default class UsersController {
     User.findOne({ username: req.params.username }, (err, user) => {
       if (!user) { return res.sendStatus(404); }
 
-      const ownerQuery = {
-        _id: user._id,
-        username: user.username
-      };
-
-      Deck.find({owner: ownerQuery}).exec((error, decks) => {
+      Deck.find({'owner._id': user._id}).exec((error, decks) => {
         if (error) { return console.error(error); }
 
         const passedUser = {
