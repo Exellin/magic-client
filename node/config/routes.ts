@@ -3,6 +3,7 @@ import * as express from 'express';
 import UsersController from '../controllers/users';
 import DecksController from '../controllers/decks';
 import CardsController from '../controllers/cards';
+import PusherController from '../controllers/pusher';
 
 import { ensureToken, verifyToken } from '../middleware/token';
 import { checkDeckOwnership } from '../middleware/ownership';
@@ -14,6 +15,7 @@ export default function setRoutes(app) {
   const usersController = new UsersController();
   const decksController = new DecksController();
   const cardsController = new CardsController();
+  const pusherController = new PusherController();
 
   router.post('/user', usersController.register);
   router.post('/login', usersController.login);
@@ -25,6 +27,8 @@ export default function setRoutes(app) {
 
   router.post('/card', ensureToken, verifyToken, cardsController.create);
   router.get('/cards/:card_name', ensureToken, verifyToken, cardsController.get);
+
+  router.post('/pusher/auth', ensureToken, verifyToken, pusherController.create);
 
   app.use('/api', router);
 }
