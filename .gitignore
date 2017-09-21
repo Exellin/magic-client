@@ -43,4 +43,5 @@ yarn-error.log
 Thumbs.db
 
 # environment variables
+src/environments/base.ts
 .env

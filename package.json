@@ -10,7 +10,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "server": "npm run build:live",
-    "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./node/server.ts"
+    "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./node/server.ts",
+    "postinstall": "node ./node_modules/ng-node-environment/index.js"
   },
   "private": true,
   "dependencies": {
@@ -38,6 +39,7 @@
     "jsonwebtoken": "^7.4.3",
     "materialize-css": "^0.100.2",
     "mongoose": "^4.11.9",
+    "ng-node-environment": "^1.0.8",
     "pusher": "^1.5.1",
     "pusher-js": "^4.1.0",
     "rxjs": "^5.4.2",
