@@ -18,6 +18,9 @@ export default class PusherController {
     const channel = req.body.channel_name;
     const presenceData = {
       user_id: req.user.id,
+      user_info: {
+        username: req.user.username
+      }
     };
     const auth = pusher.authenticate(socketId, channel, presenceData);
     res.send(auth);

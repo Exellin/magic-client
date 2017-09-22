@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { toast } from 'angular2-materialize';
 
 import { CardsService } from '../cards/cards.service';
 import { environment } from '../../environments/environment';
@@ -10,9 +11,10 @@ declare const Pusher;
   styleUrls: ['./board.component.scss']
 })
 
-export class BoardComponent implements OnInit {
+export class BoardComponent implements OnInit, OnDestroy {
   pusherChannel;
   gameId;
+  players;
   cardNames = [['nissa, worldwaker'], ['lightning bolt']];
   deck = [];
 
@@ -32,8 +34,13 @@ export class BoardComponent implements OnInit {
     this.initPusher();
   }
 
+  ngOnDestroy() {
+    this.pusherChannel.unsubscribe(this.gameId);
+  }
+
   initPusher() {
     this.gameId = this.findOrCreateId();
+
     const pusher = new Pusher(environment.appKey, {
       authEndpoint: 'http://localhost:3000/api/pusher/auth',
       auth: {
@@ -43,7 +50,23 @@ export class BoardComponent implements OnInit {
       },
       cluster: environment.appCluster
     });
+
     this.pusherChannel = pusher.subscribe(this.gameId);
+
+    this.pusherChannel.bind('pusher:member_added', member => {
+      toast(`${member.info.username} joined the game`, 5000);
+      this.players++;
+    });
+
+    this.pusherChannel.bind('pusher:subscription_succeeded', members => {
+      toast('connected', 5000);
+      this.players = members.count;
+    });
+
+    this.pusherChannel.bind('pusher:member_removed', member => {
+      toast(`${member.info.username} left the game`, 5000);
+      this.players--;
+    });
   }
 
   findOrCreateId() {
