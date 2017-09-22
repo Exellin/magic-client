@@ -13,7 +13,6 @@ const pusher = new Pusher({
 
 export default class PusherController {
   create = (req, res) => {
-    console.log(req.user);
     const socketId = req.body.socket_id;
     const channel = req.body.channel_name;
     const presenceData = {

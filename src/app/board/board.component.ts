@@ -14,23 +14,11 @@ declare const Pusher;
 export class BoardComponent implements OnInit, OnDestroy {
   pusherChannel;
   gameId;
-  players;
-  cardNames = [['nissa, worldwaker'], ['lightning bolt']];
-  deck = [];
+  players = [];
 
-  constructor(private cardsService: CardsService) {}
+  constructor() {}
 
   ngOnInit() {
-    for (const cardName of this.cardNames) {
-      this.cardsService.getCardFromApi(cardName).subscribe(
-        res => {
-          this.deck.push(res.cards[0]);
-        },
-        err => {
-          console.log(err);
-        }
-      );
-    }
     this.initPusher();
   }
 
@@ -55,17 +43,26 @@ export class BoardComponent implements OnInit, OnDestroy {
 
     this.pusherChannel.bind('pusher:member_added', member => {
       toast(`${member.info.username} joined the game`, 5000);
-      this.players++;
+
+      const match = this.players.find((player) => {
+        return player.username === member.info.username;
+      });
+
+      if (!match) {
+        this.players.push(member.info);
+      }
     });
 
     this.pusherChannel.bind('pusher:subscription_succeeded', members => {
       toast('connected', 5000);
-      this.players = members.count;
+      const membersArray = Object.entries(members.members);
+      for (const member of membersArray) {
+        this.players.push(member[1]);
+      }
     });
 
     this.pusherChannel.bind('pusher:member_removed', member => {
       toast(`${member.info.username} left the game`, 5000);
-      this.players--;
     });
   }
 
