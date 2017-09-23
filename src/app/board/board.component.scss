@@ -1,3 +1,23 @@
 .modal-action {
   margin-right: 10px;
 }
+
+.playing-area {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+}
+
+.player-areas {
+  display: flex;
+  justify-content: space-between;
+}
+
+.player-area {
+  border: 1px solid black;
+  width: 100%;
+}
+
+.battlefield {
+  width: 100%;
+}

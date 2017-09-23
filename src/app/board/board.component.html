@@ -1,8 +1,22 @@
-<ul>
-  <li *ngFor='let player of players'>{{ player.username }} - <span *ngIf='player.deck'>{{ player.deck.name }}</span></li>
-</ul>
+<div class='playing-area'>
+  <div class='player-areas'>
+    <div *ngFor='let player of players.slice(0, players.length/2)' class='player-area'>
+      {{ player.username }} - <span *ngIf='player.deck'>{{ player.deck.name }}</span>
+    </div>
+  </div>
+  <div class='battlefield'></div>
+  <div class='player-areas'>
+    <div *ngFor='let player of players.slice(players.length/2, players.length)' class='player-area'>
+      {{ player.username }} - <span *ngIf='player.deck'>{{ player.deck.name }}</span>
+    </div>
+  </div>
+</div>
 
-<a class='waves-effect waves-light btn modal-trigger' href='#modal1' (click)='openModal()'>Select Deck</a>
+<div>
+  <a class='waves-effect waves-light btn modal-trigger' href='#modal1' (click)='openModal()'>Select Deck</a>
+
+  <button class='waves-effect btn' (click)='updatePlayerData()'>Sync board for other players</button>
+</div>
 
 <div id='modal1' class='modal' materialize='modal' [materializeParams]='[{dismissible: false}]' [materializeActions]='modalActions'>
   <div class='modal-content'>
@@ -13,5 +27,3 @@
     <a class='waves-effect waves-green btn-flat' (click)='closeModal()'>Close</a>
   </div>
 </div>
-
-<button class='waves-effect btn' (click)='updatePlayerData()'>Sync board for other players</button>
