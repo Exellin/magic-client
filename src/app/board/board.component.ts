@@ -105,6 +105,16 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.pusherChannel.bind('client-assign-deck-to-player', obj => {
       this.assignDeck(obj.deck);
     });
+
+    this.pusherChannel.bind('client-update-player-data', obj => {
+      this.players = obj.players;
+    });
+  }
+
+  updatePlayerData() {
+    this.pusherChannel.trigger('client-update-player-data', {
+      players: this.players
+    });
   }
 
   openModal() {
