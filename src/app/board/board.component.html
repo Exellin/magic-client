@@ -1,3 +1,15 @@
 <ul>
-  <li *ngFor='let player of players'>{{ player.username }}</li>
+  <li *ngFor='let player of players'>{{ player.username }} - <span *ngIf='player.deck'>{{ player.deck.name }}</span></li>
 </ul>
+
+<a class='waves-effect waves-light btn modal-trigger' href='#modal1' (click)='openModal()'>Select Deck</a>
+
+<div id='modal1' class='modal' materialize='modal' [materializeParams]='[{dismissible: false}]' [materializeActions]='modalActions'>
+  <div class='modal-content'>
+    <h4>Decks</h4>
+    <a *ngFor='let deck of currentUserDecks' class='modal-action modal-close waves-effect waves-green btn' (click)='selectDeck(deck)'>{{ deck.name }}</a>
+  </div>
+  <div class='modal-footer'>
+    <a class='waves-effect waves-green btn-flat' (click)='closeModal()'>Close</a>
+  </div>
+</div>

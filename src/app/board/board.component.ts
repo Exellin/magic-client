@@ -1,8 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, EventEmitter } from '@angular/core';
 import { toast } from 'angular2-materialize';
+import { MaterializeAction } from 'angular2-materialize';
 
 import { CardsService } from '../cards/cards.service';
 import { environment } from '../../environments/environment';
+import { ProfileService } from '../profile/profile.service';
 
 declare const Pusher;
 
@@ -15,11 +17,17 @@ export class BoardComponent implements OnInit, OnDestroy {
   pusherChannel;
   gameId;
   players = [];
+  currentUserDecks;
 
-  constructor() {}
+  modalActions = new EventEmitter<string|MaterializeAction>();
+
+  constructor(
+    private profileService: ProfileService
+  ) {}
 
   ngOnInit() {
     this.initPusher();
+    this.listenForChanges();
   }
 
   ngOnDestroy() {
@@ -55,6 +63,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
     this.pusherChannel.bind('pusher:subscription_succeeded', members => {
       toast('connected', 5000);
+      this.setCurrentUserDecks(members.me.info.username);
       const membersArray = Object.entries(members.members);
       for (const member of membersArray) {
         this.players.push(member[1]);
@@ -74,5 +83,46 @@ export class BoardComponent implements OnInit, OnDestroy {
       location.search = `id=${id}`;
     }
     return id;
+  }
+
+  selectDeck(deck) {
+    this.pusherChannel.trigger('client-assign-deck-to-player', {
+      deck: deck
+    });
+
+    this.assignDeck(deck);
+  }
+
+  assignDeck(deck) {
+    const match = this.players.find((player) => {
+      return player.username === deck.owner.username;
+    });
+    const playerIndex = this.players.indexOf(match);
+    this.players[playerIndex].deck = deck;
+  }
+
+  listenForChanges() {
+    this.pusherChannel.bind('client-assign-deck-to-player', obj => {
+      this.assignDeck(obj.deck);
+    });
+  }
+
+  openModal() {
+    this.modalActions.emit({action: 'modal', params: ['open']});
+  }
+
+  closeModal() {
+    this.modalActions.emit({action: 'modal', params: ['close']});
+  }
+
+  setCurrentUserDecks(username) {
+    this.profileService.getUser(username).subscribe(
+      res => {
+        this.currentUserDecks = res.user.decks;
+      },
+      err => {
+        console.log(err);
+      }
+    );
   }
 }
