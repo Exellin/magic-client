@@ -3,6 +3,7 @@ import { toast } from 'angular2-materialize';
 import { MaterializeAction } from 'angular2-materialize';
 
 import { CardsService } from '../cards/cards.service';
+import { DeckService } from '../decks/deck.service';
 import { environment } from '../../environments/environment';
 import { ProfileService } from '../profile/profile.service';
 
@@ -22,6 +23,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   modalActions = new EventEmitter<string|MaterializeAction>();
 
   constructor(
+    private deckService: DeckService,
     private profileService: ProfileService
   ) {}
 
@@ -98,7 +100,15 @@ export class BoardComponent implements OnInit, OnDestroy {
       return player.username === deck.owner.username;
     });
     const playerIndex = this.players.indexOf(match);
-    this.players[playerIndex].deck = deck;
+
+    this.deckService.getDeck(deck._id).subscribe(
+      res => {
+        this.players[playerIndex].deck = res.data;
+      },
+      err => {
+        console.log(err);
+      }
+    );
   }
 
   listenForChanges() {
