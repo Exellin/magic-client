@@ -9,6 +9,7 @@ import { ProfileService } from './profile.service';
 import { DecksListComponent } from '../decks/decks-list/decks-list.component';
 import { DeckComponent } from '../decks/deck/deck.component';
 import { DeckService } from '../decks/deck.service';
+import { NavbarModule } from '../navbar/navbar.module';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { DeckService } from '../decks/deck.service';
     CommonModule,
     ReactiveFormsModule,
     RoutingModule,
-    NgxErrorsModule
+    NgxErrorsModule,
+    NavbarModule
   ],
   providers: [
     DeckService,

@@ -8,6 +8,7 @@ import { RegisterComponent } from './register/register.component';
 import { AuthService } from './auth.service';
 import { LoggedInGuard } from './logged-in.guard';
 import { LoggedOutGuard } from './logged-out.guard';
+import { NavbarModule } from '../navbar/navbar.module';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { LoggedOutGuard } from './logged-out.guard';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    NgxErrorsModule
+    NgxErrorsModule,
+    NavbarModule
   ],
   providers: [
     AuthService,
