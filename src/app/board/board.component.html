@@ -1,3 +1,4 @@
+<app-navbar *ngIf='showNavbar'></app-navbar>
 <div class='playing-area'>
   <div class='player-areas'>
     <div *ngFor='let player of players.slice(0, players.length/2)' class='player-area'>
@@ -16,6 +17,8 @@
   <a class='waves-effect waves-light btn modal-trigger' href='#modal1' (click)='openModal()'>Select Deck</a>
 
   <button class='waves-effect btn' (click)='updatePlayerData()'>Sync board for other players</button>
+
+  <button class='waves-effect btn' (click)='toggleNavbar()'>Toggle Navbar</button>
 </div>
 
 <div id='modal1' class='modal' materialize='modal' [materializeParams]='[{dismissible: false}]' [materializeActions]='modalActions'>

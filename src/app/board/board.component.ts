@@ -19,6 +19,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   gameId;
   players = [];
   currentUserDecks;
+  showNavbar = false;
 
   modalActions = new EventEmitter<string|MaterializeAction>();
 
@@ -144,5 +145,9 @@ export class BoardComponent implements OnInit, OnDestroy {
         console.log(err);
       }
     );
+  }
+
+  toggleNavbar() {
+    this.showNavbar = !this.showNavbar;
   }
 }
