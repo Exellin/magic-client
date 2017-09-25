@@ -3,13 +3,13 @@
 <div class='playing-area'>
   <div class='player-areas'>
     <div *ngFor='let player of players.slice(0, players.length/2)' class='player-area'>
-      {{ player.username }} - <span *ngIf='player.deck'>{{ player.deck.name }}</span>
+      <app-player-area [player]='player'></app-player-area>
     </div>
   </div>
   <div class='battlefield'></div>
   <div class='player-areas'>
     <div *ngFor='let player of players.slice(players.length/2, players.length)' class='player-area'>
-      {{ player.username }} - <span *ngIf='player.deck'>{{ player.deck.name }}</span>
+      <app-player-area [player]='player'></app-player-area>
     </div>
   </div>
 </div>

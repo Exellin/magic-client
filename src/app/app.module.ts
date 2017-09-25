@@ -11,12 +11,14 @@ import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { HomeComponent } from './home/home.component';
 import { NavbarModule } from './navbar/navbar.module';
+import { PlayerAreaComponent } from './board/player-area/player-area.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     BoardComponent,
-    HomeComponent
+    HomeComponent,
+    PlayerAreaComponent
   ],
   imports: [
     AuthModule,
