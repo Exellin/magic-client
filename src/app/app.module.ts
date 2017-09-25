@@ -10,11 +10,14 @@ import { CardsService } from './cards/cards.service';
 import { RoutingModule } from './routing.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
+import { HomeComponent } from './home/home.component';
+import { NavbarModule } from './navbar/navbar.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    BoardComponent
+    BoardComponent,
+    HomeComponent
   ],
   imports: [
     AuthModule,
@@ -23,7 +26,8 @@ import { ProfileModule } from './profile/profile.module';
     HttpModule,
     RoutingModule,
     MaterializeModule,
-    ProfileModule
+    ProfileModule,
+    NavbarModule
   ],
   providers: [
     CardsService

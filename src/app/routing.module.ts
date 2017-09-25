@@ -8,8 +8,10 @@ import { ProfileComponent } from './profile/profile.component';
 import { DeckComponent } from './decks/deck/deck.component';
 import { LoggedInGuard } from './auth/logged-in.guard';
 import { LoggedOutGuard } from './auth/logged-out.guard';
+import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
+  { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent, canActivate: [LoggedOutGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [LoggedOutGuard] },
   { path: 'board', component: BoardComponent, canActivate: [LoggedInGuard] },
