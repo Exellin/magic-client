@@ -6,7 +6,6 @@ import { MaterializeModule } from 'angular2-materialize';
 
 import { AppComponent } from './app.component';
 import { BoardComponent } from './board/board.component';
-import { CardsService } from './cards/cards.service';
 import { RoutingModule } from './routing.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
@@ -29,9 +28,7 @@ import { NavbarModule } from './navbar/navbar.module';
     ProfileModule,
     NavbarModule
   ],
-  providers: [
-    CardsService
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 

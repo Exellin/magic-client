@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy, EventEmitter } from '@angular/core';
 import { toast } from 'angular2-materialize';
 import { MaterializeAction } from 'angular2-materialize';
 
-import { CardsService } from '../cards/cards.service';
 import { DeckService } from '../decks/deck.service';
 import { environment } from '../../environments/environment';
 import { ProfileService } from '../profile/profile.service';

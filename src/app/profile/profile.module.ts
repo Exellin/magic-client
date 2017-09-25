@@ -6,6 +6,7 @@ import { RoutingModule } from '../routing.module';
 
 import { ProfileComponent } from './profile.component';
 import { ProfileService } from './profile.service';
+import { CardsService } from '../cards/cards.service';
 import { DecksListComponent } from '../decks/decks-list/decks-list.component';
 import { DeckComponent } from '../decks/deck/deck.component';
 import { DeckService } from '../decks/deck.service';
@@ -25,6 +26,7 @@ import { NavbarModule } from '../navbar/navbar.module';
     NavbarModule
   ],
   providers: [
+    CardsService,
     DeckService,
     ProfileService
   ]
