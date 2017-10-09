@@ -19,6 +19,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   players = [];
   currentUserDecks;
   showNavbar = false;
+  currentUsername;
 
   modalActions = new EventEmitter<string|MaterializeAction>();
 
@@ -65,6 +66,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
     this.pusherChannel.bind('pusher:subscription_succeeded', members => {
       toast('connected', 5000);
+      this.currentUsername = members.me.info.username;
       this.setCurrentUserDecks(members.me.info.username);
       const membersArray = Object.entries(members.members);
       for (const member of membersArray) {
@@ -89,7 +91,12 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   selectDeck(deck) {
     this.pusherChannel.trigger('client-assign-deck-to-player', {
-      deck: deck
+      deck: {
+        _id: deck._id,
+        owner: {
+          username: deck.owner.username
+        }
+      }
     });
 
     this.assignDeck(deck);

@@ -1,1 +1,6 @@
-{{ player.username }} - <span *ngIf='player.deck'>{{ player.deck.name }}</span>
+<div>{{ player.username }}</div>
+<div>Cards: {{ player.library.length }}</div>
+<img class='card-back' (click)='drawCard()' src='https://mtg.gamepedia.com/media/mtg.gamepedia.com/f/f8/Magic_card_back.jpg?version=4694fa6f8c95cfc758855c8ed4c4d0c0'>
+<span *ngFor='let card of player.hand'>
+  <img src='{{ card.imageUrls.small }}'>
+</span>
