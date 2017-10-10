@@ -3,7 +3,7 @@ import * as mongoose from 'mongoose';
 const CardSchema = mongoose.Schema({
   name: { type: String, required: true, unique: true },
   layout: { type: String, required: true },
-  cmc: { type: Number, required: true },
+  cmc: { type: Number },
   colors: [{ type: String }],
   colorIdentity: [{ type: String }],
   type: { type: String, required: true },
@@ -15,7 +15,7 @@ const CardSchema = mongoose.Schema({
   setName: { type: String, required: true },
   text: { type: String },
   flavor: { type: String },
-  number: { type: Number, required: true },
+  number: { type: String },
   power: { type: String },
   toughness: { type: String },
   loyalty: { type: Number },
