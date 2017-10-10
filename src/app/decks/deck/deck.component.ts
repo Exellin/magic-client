@@ -62,7 +62,28 @@ export class DeckComponent implements OnInit {
 
   addCardsSubmit() {
     const newCardsArray = this.addCardsForm.value.new_card_list.split('\n');
+    const promises = [];
+
     for (const newCard of newCardsArray) {
+      promises.push(this.processCard(newCard));
+    }
+
+    Promise.all(promises).then(() => {
+      this.deckService.updateDeck(this.deck).subscribe(
+        res => {},
+        err => {
+          console.log(err);
+        }
+      );
+    });
+
+    Promise.all(promises).catch((err) => {
+      console.log(err);
+    });
+  }
+
+  processCard(newCard) {
+    return new Promise((resolve, reject) => {
       const quantityAndName = newCard.split(/ (.+)/);
       const quantityString = quantityAndName[0];
       const cardName = quantityAndName[1];
@@ -70,22 +91,22 @@ export class DeckComponent implements OnInit {
 
       if (!parsedQuantity) {
         toast(`${quantityString} is not a number`, 5000);
-        continue;
+        resolve();
       }
 
       if (!cardName) {
         toast(`no card name found next to ${quantityString}`, 5000);
-        continue;
+        resolve();
       }
 
       if (parsedQuantity > 100) {
         toast(`Can only import a max of 100 ${cardName} at a time`, 5000);
-        continue;
+        resolve();
       }
 
       if (parsedQuantity < 1) {
         toast(`Can only import a positive number of ${cardName}`, 5000);
-        continue;
+        resolve();
       }
 
       const match = this.deck.cards.find((card) => {
@@ -94,84 +115,109 @@ export class DeckComponent implements OnInit {
 
       if (match) {
         match.quantity += parsedQuantity;
-        this.deckService.updateDeck(this.deck).subscribe(
-          res => {
-            toast(`${match.name} quantity increased by ${parsedQuantity}`, 5000);
-          },
-          err => {
-            console.log(err);
-          }
-        );
+        toast(`${match.name} quantity increased by ${parsedQuantity}`, 5000);
+        resolve();
       } else {
         const checkCardPromise = this.checkCardExistence(cardName);
 
         checkCardPromise.then((cardExists) => {
           if (cardExists) {
-            this.importCardFromDataBase(cardName, parsedQuantity);
+            const importPromise = this.importCardFromDataBase(cardName, parsedQuantity);
+
+            importPromise.then(() => {
+              resolve();
+            });
+
+            importPromise.catch((err) => {
+              reject(err);
+            });
           } else {
-            this.importCardFromApi(cardName, parsedQuantity);
+            const importPromise = this.importCardFromApi(cardName, parsedQuantity);
+
+            importPromise.then(() => {
+              resolve();
+            });
+
+            importPromise.catch((err) => {
+              reject(err);
+            });
           }
         });
 
         checkCardPromise.catch((err) => {
-          console.log(err);
+          reject(err);
         });
       }
-    }
+    });
   }
 
   importCardFromApi(cardName, quantity) {
-    this.cardsService.getCardFromApi(cardName).subscribe(
-      res => {
-        const fetchedCard = res.cards[0];
-        if (fetchedCard) {
-          const properties = ['name', 'layout', 'cmc', 'colors', 'colorIdentity', 'type', 'supertypes', 'types', 'subtypes', 'rarity',
-                              'setName', 'text', 'flavor', 'number', 'power', 'toughness', 'loyalty', 'legalities', 'multiverseid',
-                              'names', 'manaCost', 'rulings', 'printings'];
+    return new Promise((resolve, reject) => {
+      this.cardsService.getCardFromApi(cardName).subscribe(
+        res => {
+          const fetchedCard = res.cards[0];
+          if (fetchedCard) {
+            const properties = ['name', 'layout', 'cmc', 'colors', 'colorIdentity', 'type', 'supertypes', 'types', 'subtypes', 'rarity',
+                                'setName', 'text', 'flavor', 'number', 'power', 'toughness', 'loyalty', 'legalities', 'multiverseid',
+                                'names', 'manaCost', 'rulings', 'printings'];
 
-          const cardToSave = {
-            setCode: fetchedCard.set
-          };
+            const cardToSave = {
+              setCode: fetchedCard.set
+            };
 
-          for (const property of properties) {
-            if (fetchedCard.hasOwnProperty(property)) {
-              cardToSave[property] = fetchedCard[property];
+            for (const property of properties) {
+              if (fetchedCard.hasOwnProperty(property)) {
+                cardToSave[property] = fetchedCard[property];
+              }
             }
-          }
 
-          this.saveCard(cardToSave, quantity);
-        } else {
-          toast(`${cardName} could not be imported`, 5000);
+            const saveCardPromise = this.saveCard(cardToSave, quantity);
+            saveCardPromise.then(() => {
+              resolve();
+            });
+            saveCardPromise.catch((err) => {
+              reject(err);
+            });
+          } else {
+            toast(`${cardName} could not be imported`, 5000);
+            resolve();
+          }
+        },
+        err => {
+          reject(err);
         }
-      },
-      err => {
-        console.log(err);
-      }
-    );
+      );
+    });
   }
 
   importCardFromDataBase(cardName, quantity) {
-    this.cardsService.getCardFromDatabase(cardName).subscribe(
-      res => {
-        const fetchedCard = res.data;
-        this.addCardToDeck(fetchedCard, quantity);
-      },
-      err => {
-        console.log(err);
-      }
-    );
+    return new Promise((resolve, reject) => {
+      this.cardsService.getCardFromDatabase(cardName).subscribe(
+        res => {
+          const fetchedCard = res.data;
+          this.addCardToDeck(fetchedCard, quantity);
+          resolve();
+        },
+        err => {
+          reject(err);
+        }
+      );
+    });
   }
 
   saveCard(card, quantity) {
-    this.cardsService.saveCard(card).subscribe(
-      res => {
-        const savedCard = res.data;
-        this.addCardToDeck(savedCard, quantity);
-      },
-      err => {
-        console.log(err);
-      }
-    );
+    return new Promise((resolve, reject) => {
+      this.cardsService.saveCard(card).subscribe(
+        res => {
+          const savedCard = res.data;
+          this.addCardToDeck(savedCard, quantity);
+          resolve();
+        },
+        err => {
+          reject(err);
+        }
+      );
+    });
   }
 
   addCardToDeck(card, quantity) {
@@ -184,12 +230,6 @@ export class DeckComponent implements OnInit {
     }
 
     this.deck.cards.push(card);
-    this.deckService.updateDeck(this.deck).subscribe(
-      res => {},
-      err => {
-        console.log(err);
-      }
-    );
   }
 
   checkCardExistence(cardName) {
