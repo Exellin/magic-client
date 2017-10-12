@@ -126,6 +126,37 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.pusherChannel.bind('client-update-player-data', obj => {
       this.players = obj.players;
     });
+
+    this.pusherChannel.bind('client-draw-card', obj => {
+      const playerIndex = this.players.findIndex((player) => {
+        return player.username === obj.username;
+      });
+      this.players[playerIndex].hand.push(this.players[playerIndex].library.shift());
+    });
+
+    this.pusherChannel.bind('client-shuffle-library', obj => {
+      const library = [];
+      const playerIndex = this.players.findIndex((player) => {
+        return player.username === obj.username;
+      });
+
+      for (const id of obj.IdArray) {
+        const match = this.players[playerIndex].deck.cards.find((card) => {
+          return id === card.multiverseid;
+        });
+        library.push(match);
+      }
+
+      this.players[playerIndex].library = library;
+    });
+
+    this.pusherChannel.bind('client-lock-in-deck', obj => {
+      const playerIndex = this.players.findIndex((player) => {
+        return player.username === obj.username;
+      });
+
+      this.players[playerIndex].deckLockedIn = true;
+    });
   }
 
   updatePlayerData() {

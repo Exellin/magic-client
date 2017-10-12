@@ -11,36 +11,17 @@ export class PlayerAreaComponent implements OnInit {
   @Input() player;
   @Input() pusherChannel;
   @Input() currentUsername;
+  isCurrentUser;
 
   constructor() {}
 
   ngOnInit() {
     this.player.library = [];
     this.player.hand = [];
-    this.listenForChanges();
 
     if (this.player.username === this.currentUsername) {
-      this.createLibrary(this.player.deck);
-      this.shuffleLibrary(this.player.library);
+      this.isCurrentUser = true;
     }
-  }
-
-  listenForChanges() {
-    this.pusherChannel.bind('client-draw-card', obj => {
-      this.player.hand.push(this.player.library.shift());
-    });
-
-    this.pusherChannel.bind('client-shuffle-library', obj => {
-      const library = [];
-
-      for (const id of obj.IdArray) {
-        const match = this.player.deck.cards.find((card) => {
-          return id === card.multiverseid;
-        });
-        library.push(match);
-      }
-      this.player.library = library;
-    });
   }
 
   createLibrary(deck) {
@@ -67,16 +48,33 @@ export class PlayerAreaComponent implements OnInit {
     }
     const IdArray = this.convertLibraryToArrayOfIds(library);
     this.pusherChannel.trigger('client-shuffle-library', {
-      IdArray: IdArray
+      IdArray: IdArray,
+      username: this.currentUsername
     });
   }
 
   drawCard() {
     if (this.player.library.length !== 0) {
-      this.player.hand.push(this.player.library.shift());
-      this.pusherChannel.trigger('client-draw-card', {});
+      if (this.player.deck.owner.username !== this.currentUsername) {
+        toast('You can only draw from your own deck', 5000);
+      } else {
+        this.player.hand.push(this.player.library.shift());
+        this.pusherChannel.trigger('client-draw-card', {
+          username: this.currentUsername
+        });
+      }
     } else {
       toast('library is empty', 5000);
     }
+  }
+
+  lockInDeck() {
+    this.pusherChannel.trigger('client-lock-in-deck', {
+      username: this.currentUsername
+    });
+
+    this.player.deckLockedIn = true;
+    this.createLibrary(this.player.deck);
+    this.shuffleLibrary(this.player.library);
   }
 }
