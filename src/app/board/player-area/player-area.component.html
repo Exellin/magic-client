@@ -1,9 +1,10 @@
 <div>{{ player.username }}</div>
 <div *ngIf='player.deckLockedIn'>Cards: {{ player.library.length }}</div>
 <button *ngIf='isCurrentUser && !player.deckLockedIn' class='waves-effect btn' (click)=lockInDeck()>Lock In {{ player.deck.name }}</button>
-<img *ngIf='player.deckLockedIn' class='library' (click)='drawCard()' src='https://mtg.gamepedia.com/media/mtg.gamepedia.com/f/f8/Magic_card_back.jpg?version=4694fa6f8c95cfc758855c8ed4c4d0c0'>
+<img *ngIf='player.deckLockedIn' class='library' (click)='drawCard()' src='{{ cardBackUrl }}'>
 <span *ngIf='player.deckLockedIn'>
   <span *ngFor='let card of player.hand'>
-    <img class='hand' src='{{ card.imageUrls.small }}'>
+    <img *ngIf='isCurrentUser' class='hand' src='{{ card.imageUrls.small }}'>
+    <img *ngIf='!isCurrentUser' class='hand' src='{{ cardBackUrl }}'>
   </span>
 </span>

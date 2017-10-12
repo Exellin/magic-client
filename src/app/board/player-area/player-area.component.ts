@@ -12,6 +12,7 @@ export class PlayerAreaComponent implements OnInit {
   @Input() pusherChannel;
   @Input() currentUsername;
   isCurrentUser;
+  cardBackUrl = 'https://mtg.gamepedia.com/media/mtg.gamepedia.com/f/f8/Magic_card_back.jpg?version=4694fa6f8c95cfc758855c8ed4c4d0c0';
 
   constructor() {}
 
