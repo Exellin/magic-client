@@ -155,33 +155,38 @@ export class DeckComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.cardsService.getCardFromApi(cardName).subscribe(
         res => {
-          const fetchedCard = res.cards[0];
-          if (fetchedCard) {
-            const properties = ['name', 'layout', 'cmc', 'colors', 'colorIdentity', 'type', 'supertypes', 'types', 'subtypes', 'rarity',
-                                'setName', 'text', 'flavor', 'number', 'power', 'toughness', 'loyalty', 'legalities', 'multiverseid',
-                                'names', 'manaCost', 'rulings', 'printings'];
-
-            const cardToSave = {
-              setCode: fetchedCard.set
-            };
-
-            for (const property of properties) {
-              if (fetchedCard.hasOwnProperty(property)) {
-                cardToSave[property] = fetchedCard[property];
-              }
-            }
-
-            const saveCardPromise = this.saveCard(cardToSave, quantity);
-            saveCardPromise.then(() => {
-              resolve();
-            });
-            saveCardPromise.catch((err) => {
-              reject(err);
-            });
-          } else {
+          if (!res.cards) {
             toast(`${cardName} could not be imported`, 5000);
             resolve();
           }
+
+          let fetchedCard = res.cards[0];
+
+          if (fetchedCard.set === 'MPS_AKH') {
+            fetchedCard = res.cards[1];
+          }
+
+          const properties = ['name', 'layout', 'cmc', 'colors', 'colorIdentity', 'type', 'supertypes', 'types', 'subtypes', 'rarity',
+                              'setName', 'text', 'flavor', 'number', 'power', 'toughness', 'loyalty', 'legalities', 'multiverseid',
+                              'names', 'manaCost', 'rulings', 'printings'];
+
+          const cardToSave = {
+            setCode: fetchedCard.set
+          };
+
+          for (const property of properties) {
+            if (fetchedCard.hasOwnProperty(property)) {
+              cardToSave[property] = fetchedCard[property];
+            }
+          }
+
+          const saveCardPromise = this.saveCard(cardToSave, quantity);
+          saveCardPromise.then(() => {
+            resolve();
+          });
+          saveCardPromise.catch((err) => {
+            reject(err);
+          });
         },
         err => {
           reject(err);

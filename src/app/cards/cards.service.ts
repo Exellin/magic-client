@@ -17,7 +17,7 @@ export class CardsService {
   }
 
   getCardFromApi(cardName): Observable<any> {
-    return this.http.get(`https://api.magicthegathering.io/v1/cards?name="${cardName}"&contains=multiverseid&pageSize=1`).map(
+    return this.http.get(`https://api.magicthegathering.io/v1/cards?name="${cardName}"&contains=multiverseid&pageSize=2`).map(
       res => res.json());
   }
 
