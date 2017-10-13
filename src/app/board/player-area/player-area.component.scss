@@ -1,3 +1,14 @@
-.library, .hand {
+.small-card {
   width: 146px;
+  height: 204px;
+}
+
+.library-and-hand {
+  display: flex;
+}
+
+.hand {
+  display: inline-flex;
+  overflow-x: scroll;
+  border: 8px inset #c9bea8;
 }
