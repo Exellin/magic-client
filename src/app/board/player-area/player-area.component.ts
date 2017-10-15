@@ -11,6 +11,7 @@ export class PlayerAreaComponent implements OnInit {
   @Input() player;
   @Input() pusherChannel;
   @Input() currentUsername;
+  @Input() battlefield;
   isCurrentUser;
   cardBackUrl = 'https://mtg.gamepedia.com/media/mtg.gamepedia.com/f/f8/Magic_card_back.jpg?version=4694fa6f8c95cfc758855c8ed4c4d0c0';
 
@@ -67,6 +68,15 @@ export class PlayerAreaComponent implements OnInit {
     } else {
       toast('library is empty', 5000);
     }
+  }
+
+  placeCardOnBattlefield(card) {
+    card.width = 146;
+    card.height = 204;
+    card.x = 0;
+    card.y = 0;
+    this.player.hand.splice(this.player.hand.indexOf(card), 1);
+    this.battlefield.push(card);
   }
 
   lockInDeck() {

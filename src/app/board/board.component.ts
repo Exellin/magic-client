@@ -20,6 +20,13 @@ export class BoardComponent implements OnInit, OnDestroy {
   currentUserDecks;
   showNavbar = false;
   currentUsername;
+  canvasContainer;
+  canvasElement;
+  canvasContext;
+  isDragging = false;
+  battlefield = [];
+  mouseX;
+  mouseY;
 
   modalActions = new EventEmitter<string|MaterializeAction>();
 
@@ -29,12 +36,72 @@ export class BoardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.initCanvas();
     this.initPusher();
     this.listenForChanges();
   }
 
   ngOnDestroy() {
     this.pusherChannel.unsubscribe(this.gameId);
+  }
+
+  initCanvas() {
+    this.buildCanvas();
+    this.animateCanvas();
+    this.resizeCanvas();
+
+    window.addEventListener(('mousedown'), (e) => {
+      this.isDragging = true;
+      this.mouseX = e.clientX;
+      this.mouseY = e.clientY;
+    });
+
+    window.addEventListener(('mouseup'), (e) => {
+      this.isDragging = false;
+    });
+
+    window.addEventListener(('mousemove'), (e) => {
+      if (this.isDragging === true && e.srcElement === this.canvasElement) {
+        const cardToDrag = this.battlefield.find((card) => {
+          return ((card.x < e.offsetX) && (e.offsetX < (card.x + card.width)) &&
+                  (card.y < e.offsetY) && (e.offsetY < (card.y + card.height)));
+        });
+
+        if (cardToDrag) {
+          cardToDrag.x += e.clientX - this.mouseX;
+          cardToDrag.y += e.clientY - this.mouseY;
+
+          this.battlefield.splice(this.battlefield.indexOf(cardToDrag), 1);
+          this.battlefield.unshift(cardToDrag);
+
+          this.mouseX = e.clientX;
+          this.mouseY = e.clientY;
+        }
+      }
+    });
+  }
+
+  buildCanvas() {
+    this.canvasContainer = document.querySelector('.canvas-container');
+    this.canvasElement = document.querySelector('canvas');
+    this.canvasContext = this.canvasElement.getContext('2d');
+  }
+
+  resizeCanvas() {
+    this.canvasElement.width = this.canvasContainer.clientWidth;
+    this.canvasElement.height = 400;
+  }
+
+  animateCanvas() {
+    this.canvasContext.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
+
+    for (const card of this.battlefield) {
+      const img = new Image();
+      img.src = card.imageUrls.small;
+      this.canvasContext.drawImage(img, card.x, card.y);
+    }
+
+    requestAnimationFrame(() => this.animateCanvas());
   }
 
   initPusher() {

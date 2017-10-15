@@ -5,7 +5,7 @@
   <img *ngIf='player.deckLockedIn' class='small-card' (click)='drawCard()' src='{{ cardBackUrl }}'>
   <div *ngIf='player.hand.length > 0' class='hand'>
     <span *ngFor='let card of player.hand'>
-      <img *ngIf='isCurrentUser' class='small-card' src='{{ card.imageUrls.small }}'>
+      <img *ngIf='isCurrentUser' class='small-card' (click)='placeCardOnBattlefield(card)' src='{{ card.imageUrls.small }}'>
       <img *ngIf='!isCurrentUser' class='small-card' src='{{ cardBackUrl }}'>
     </span>
   </div>

@@ -4,8 +4,13 @@
 
 .playing-area {
   display: flex;
-  justify-content: space-around;
+  height: 100vh;
+  justify-content: space-between;
   flex-direction: column;
+}
+
+.canvas-container {
+  flex-grow: 1
 }
 
 .player-areas {

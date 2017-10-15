@@ -3,13 +3,17 @@
 <div class='playing-area'>
   <div class='player-areas'>
     <div *ngFor='let player of players.slice(0, players.length/2)' class='player-area'>
-      <app-player-area *ngIf='player.deck' [player]='player' [pusherChannel]='pusherChannel' [currentUsername]='currentUsername'></app-player-area>
+      <app-player-area *ngIf='player.deck' [player]='player' [pusherChannel]='pusherChannel'
+      [currentUsername]='currentUsername' [battlefield]='battlefield'></app-player-area>
     </div>
   </div>
-  <div class='battlefield'></div>
+  <div class='canvas-container'>
+    <canvas></canvas>
+  </div>
   <div class='player-areas'>
     <div *ngFor='let player of players.slice(players.length/2, players.length)' class='player-area'>
-      <app-player-area *ngIf='player.deck' [player]='player' [pusherChannel]='pusherChannel' [currentUsername]='currentUsername'></app-player-area>
+      <app-player-area *ngIf='player.deck' [player]='player' [pusherChannel]='pusherChannel'
+      [currentUsername]='currentUsername' [battlefield]='battlefield'></app-player-area>
     </div>
   </div>
 </div>
