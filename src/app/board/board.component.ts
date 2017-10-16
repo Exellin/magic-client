@@ -27,6 +27,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   battlefield = [];
   mouseX;
   mouseY;
+  cardToDrag;
 
   modalActions = new EventEmitter<string|MaterializeAction>();
 
@@ -58,21 +59,26 @@ export class BoardComponent implements OnInit, OnDestroy {
 
     window.addEventListener(('mouseup'), (e) => {
       this.isDragging = false;
+      if (this.cardToDrag) {
+        this.pusherChannel.trigger('client-move-card', {
+          card: this.cardToDrag
+        });
+        this.cardToDrag = null;
+      }
     });
 
     window.addEventListener(('mousemove'), (e) => {
       if (this.isDragging === true && e.srcElement === this.canvasElement) {
-        const cardToDrag = this.battlefield.find((card) => {
+        this.cardToDrag = this.battlefield.find((card) => {
           return ((card.x < e.offsetX) && (e.offsetX < (card.x + card.width)) &&
                   (card.y < e.offsetY) && (e.offsetY < (card.y + card.height)));
         });
 
-        if (cardToDrag) {
-          cardToDrag.x += e.clientX - this.mouseX;
-          cardToDrag.y += e.clientY - this.mouseY;
+        if (this.cardToDrag) {
+          this.cardToDrag.x += e.clientX - this.mouseX;
+          this.cardToDrag.y += e.clientY - this.mouseY;
 
-          this.battlefield.splice(this.battlefield.indexOf(cardToDrag), 1);
-          this.battlefield.unshift(cardToDrag);
+          this.moveCardToBegginingOfBattlefieldArray(this.cardToDrag);
 
           this.mouseX = e.clientX;
           this.mouseY = e.clientY;
@@ -224,6 +230,31 @@ export class BoardComponent implements OnInit, OnDestroy {
 
       this.players[playerIndex].deckLockedIn = true;
     });
+
+    this.pusherChannel.bind('client-place-card-on-battlefield', obj => {
+      const playerIndex = this.players.findIndex((player) => {
+        return player.username === obj.username;
+      });
+
+      this.players[playerIndex].hand.splice(this.players[playerIndex].hand.indexOf(obj.card), 1);
+      this.battlefield.push(obj.card);
+    });
+
+    this.pusherChannel.bind('client-move-card', obj => {
+      const cardToMove = this.battlefield.find((card) => {
+        return ((card.deckId === obj.card.deckId) && (card.libraryId === obj.card.libraryId));
+      });
+
+      cardToMove.x = obj.card.x;
+      cardToMove.y = obj.card.y;
+
+      this.moveCardToBegginingOfBattlefieldArray(cardToMove);
+    });
+  }
+
+  moveCardToBegginingOfBattlefieldArray(card) {
+    this.battlefield.splice(this.battlefield.indexOf(card), 1);
+    this.battlefield.unshift(card);
   }
 
   updatePlayerData() {

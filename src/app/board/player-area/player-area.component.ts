@@ -81,6 +81,13 @@ export class PlayerAreaComponent implements OnInit {
     card.height = 204;
     card.x = 0;
     card.y = 0;
+    card.deckId = this.player.deck._id;
+
+    this.pusherChannel.trigger('client-place-card-on-battlefield', {
+      username: this.currentUsername,
+      card: card
+    });
+
     this.player.hand.splice(this.player.hand.indexOf(card), 1);
     this.battlefield.push(card);
   }
