@@ -10,7 +10,8 @@
 }
 
 .canvas-container {
-  flex-grow: 1
+  display: flex;
+  justify-content: space-around;
 }
 
 .player-areas {
@@ -25,4 +26,8 @@
 
 .battlefield {
   width: 100%;
+}
+
+canvas {
+  border: 1px solid black;
 }

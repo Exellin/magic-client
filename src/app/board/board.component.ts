@@ -94,7 +94,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   resizeCanvas() {
-    this.canvasElement.width = this.canvasContainer.clientWidth;
+    this.canvasElement.width = 1800;
     this.canvasElement.height = 400;
   }
 
