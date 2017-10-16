@@ -209,7 +209,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
       for (const id of obj.IdArray) {
         const match = this.players[playerIndex].deck.cards.find((card) => {
-          return id === card.multiverseid;
+          return id === card.libraryId;
         });
         library.push(match);
       }

@@ -27,9 +27,15 @@ export class PlayerAreaComponent implements OnInit {
   }
 
   createLibrary(deck) {
+    let id = 0;
     for (const card of deck.cards) {
       for (let i = 0; i < card.quantity; i++) {
-        this.player.library.push(card);
+        const cardWithId = {
+          ...card,
+          libraryId: id
+        };
+        this.player.library.push(cardWithId);
+        id++;
       }
     }
   }
@@ -37,7 +43,7 @@ export class PlayerAreaComponent implements OnInit {
   convertLibraryToArrayOfIds(library) {
     const IdArray = [];
     for (const card of library) {
-      IdArray.push(card.multiverseid);
+      IdArray.push(card.libraryId);
     }
     return IdArray;
   }
