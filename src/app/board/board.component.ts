@@ -111,7 +111,37 @@ export class BoardComponent implements OnInit, OnDestroy {
           card: cardToUntap
         });
       }
+
+      // recall card to hand
+      if (e.key === 'r') {
+        const cardToRecall = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
+        if (cardToRecall) {
+          this.recallCardToHand(this.currentUsername, cardToRecall);
+
+          this.pusherChannel.trigger(('client-recall-card'), {
+            username: this.currentUsername,
+            card: cardToRecall
+          });
+        }
+      }
     });
+  }
+
+  recallCardToHand(username, cardToRecall) {
+    const matchedPlayer = this.players.find((player) => {
+      return player.username === username;
+    });
+
+    if (matchedPlayer.deck._id === cardToRecall.deckId) {
+      const cardIndex = this.battlefield.findIndex((card) => {
+        return card.libraryId === cardToRecall.libraryId;
+      });
+
+      this.battlefield.splice(cardIndex, 1);
+      matchedPlayer.hand.push(cardToRecall);
+    } else {
+      toast('You can only recall cards in your deck', 5000);
+    }
   }
 
   findCardOnCanvas(x, y) {
@@ -294,6 +324,10 @@ export class BoardComponent implements OnInit, OnDestroy {
       cardToMove.tapped = obj.card.tapped;
 
       this.moveCardToBegginingOfBattlefieldArray(cardToMove);
+    });
+
+    this.pusherChannel.bind('client-recall-card', obj => {
+      this.recallCardToHand(obj.username, obj.card);
     });
   }
 
