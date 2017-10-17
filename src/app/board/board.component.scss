@@ -9,11 +9,6 @@
   flex-direction: column;
 }
 
-.canvas-container {
-  display: flex;
-  justify-content: space-around;
-}
-
 .player-areas {
   display: flex;
   justify-content: space-between;
@@ -22,12 +17,4 @@
 .player-area {
   border: 1px solid black;
   width: 100%;
-}
-
-.battlefield {
-  width: 100%;
-}
-
-canvas {
-  border: 1px solid black;
 }

@@ -20,16 +20,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   currentUserDecks;
   showNavbar = false;
   currentUsername;
-  canvasContainer;
-  canvasElement;
-  canvasContext;
-  isDragging = false;
   battlefield = [];
-  oldMouseX;
-  oldMouseY;
-  currentMouseX;
-  currentMouseY;
-  cardToDrag;
 
   modalActions = new EventEmitter<string|MaterializeAction>();
 
@@ -39,147 +30,12 @@ export class BoardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.initCanvas();
     this.initPusher();
     this.listenForChanges();
   }
 
   ngOnDestroy() {
     this.pusherChannel.unsubscribe(this.gameId);
-  }
-
-  initCanvas() {
-    this.buildCanvas();
-    this.animateCanvas();
-    this.resizeCanvas();
-
-    window.addEventListener(('mousedown'), (e) => {
-      this.isDragging = true;
-      this.oldMouseX = e.offsetX;
-      this.oldMouseY = e.offsetY;
-    });
-
-    window.addEventListener(('mouseup'), (e) => {
-      this.isDragging = false;
-      if (this.cardToDrag) {
-        this.pusherChannel.trigger('client-move-card', {
-          card: this.cardToDrag
-        });
-        this.cardToDrag = null;
-      }
-    });
-
-    window.addEventListener(('mousemove'), (e) => {
-      this.currentMouseX = e.offsetX;
-      this.currentMouseY = e.offsetY;
-      if (this.isDragging === true && e.srcElement === this.canvasElement) {
-        this.cardToDrag = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
-
-        if (this.cardToDrag) {
-          this.cardToDrag.x += this.currentMouseX - this.oldMouseX;
-          this.cardToDrag.y += this.currentMouseY - this.oldMouseY;
-
-          this.moveCardToBegginingOfBattlefieldArray(this.cardToDrag);
-
-          this.oldMouseX = e.offsetX;
-          this.oldMouseY = e.offsetY;
-        }
-      }
-    });
-
-    window.addEventListener(('keydown'), (e) => {
-      // tap a card
-      if (e.key === 't') {
-        const cardToTap = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
-        if (cardToTap && !cardToTap.tapped) {
-          cardToTap.tapped = true;
-          [cardToTap.width, cardToTap.height] = [cardToTap.height, cardToTap.width];
-        }
-        this.pusherChannel.trigger(('client-move-card'), {
-          card: cardToTap
-        });
-      }
-
-      // untap a card
-      if (e.key === 'u') {
-        const cardToUntap = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
-        if (cardToUntap && cardToUntap.tapped) {
-          cardToUntap.tapped = false;
-          [cardToUntap.width, cardToUntap.height] = [cardToUntap.height, cardToUntap.width];
-        }
-        this.pusherChannel.trigger(('client-move-card'), {
-          card: cardToUntap
-        });
-      }
-
-      // recall card to hand
-      if (e.key === 'r') {
-        const cardToRecall = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
-        if (cardToRecall) {
-          this.recallCardToHand(this.currentUsername, cardToRecall);
-
-          this.pusherChannel.trigger(('client-recall-card'), {
-            username: this.currentUsername,
-            card: cardToRecall
-          });
-        }
-      }
-    });
-  }
-
-  recallCardToHand(username, cardToRecall) {
-    const matchedPlayer = this.players.find((player) => {
-      return player.username === username;
-    });
-
-    if (matchedPlayer.deck._id === cardToRecall.deckId) {
-      const cardIndex = this.battlefield.findIndex((card) => {
-        return card.libraryId === cardToRecall.libraryId;
-      });
-
-      this.battlefield.splice(cardIndex, 1);
-      matchedPlayer.hand.push(cardToRecall);
-    } else {
-      toast('You can only recall cards in your deck', 5000);
-    }
-  }
-
-  findCardOnCanvas(x, y) {
-    return this.battlefield.find((card) => {
-      return ((card.x < x) && (x < (card.x + card.width)) &&
-              (card.y < y) && (y < (card.y + card.height)));
-    });
-  }
-
-  buildCanvas() {
-    this.canvasContainer = document.querySelector('.canvas-container');
-    this.canvasElement = document.querySelector('canvas');
-    this.canvasContext = this.canvasElement.getContext('2d');
-  }
-
-  resizeCanvas() {
-    this.canvasElement.width = 1800;
-    this.canvasElement.height = 400;
-  }
-
-  animateCanvas() {
-    this.canvasContext.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
-
-    for (const card of this.battlefield) {
-      const img = new Image();
-      img.src = card.imageUrls.small;
-      if (card.tapped) {
-        this.canvasContext.save();
-        this.canvasContext.translate(card.x, card.y);
-        this.canvasContext.rotate(90 * Math.PI / 180);
-        this.canvasContext.drawImage(img, 0, 0, card.height, -card.width);
-        this.canvasContext.restore();
-      } else {
-        this.canvasContext.drawImage(img, card.x, card.y, card.width, card.height);
-      }
-    }
-
-    requestAnimationFrame(() => this.animateCanvas());
   }
 
   initPusher() {
@@ -311,29 +167,6 @@ export class BoardComponent implements OnInit, OnDestroy {
       this.players[playerIndex].hand.splice(this.players[playerIndex].hand.indexOf(obj.card), 1);
       this.battlefield.push(obj.card);
     });
-
-    this.pusherChannel.bind('client-move-card', obj => {
-      const cardToMove = this.battlefield.find((card) => {
-        return ((card.deckId === obj.card.deckId) && (card.libraryId === obj.card.libraryId));
-      });
-
-      cardToMove.x = obj.card.x;
-      cardToMove.y = obj.card.y;
-      cardToMove.width = obj.card.width;
-      cardToMove.height = obj.card.height;
-      cardToMove.tapped = obj.card.tapped;
-
-      this.moveCardToBegginingOfBattlefieldArray(cardToMove);
-    });
-
-    this.pusherChannel.bind('client-recall-card', obj => {
-      this.recallCardToHand(obj.username, obj.card);
-    });
-  }
-
-  moveCardToBegginingOfBattlefieldArray(card) {
-    this.battlefield.splice(this.battlefield.indexOf(card), 1);
-    this.battlefield.unshift(card);
   }
 
   updatePlayerData() {

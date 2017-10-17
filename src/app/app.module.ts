@@ -12,13 +12,15 @@ import { ProfileModule } from './profile/profile.module';
 import { HomeComponent } from './home/home.component';
 import { NavbarModule } from './navbar/navbar.module';
 import { PlayerAreaComponent } from './board/player-area/player-area.component';
+import { BattlefieldComponent } from './board/battlefield/battlefield.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     BoardComponent,
     HomeComponent,
-    PlayerAreaComponent
+    PlayerAreaComponent,
+    BattlefieldComponent
   ],
   imports: [
     AuthModule,
