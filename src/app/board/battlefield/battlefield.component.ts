@@ -58,6 +58,7 @@ export class BattlefieldComponent implements OnInit {
           this.cardToDrag.x += this.currentMouseX - this.oldMouseX;
           this.cardToDrag.y += this.currentMouseY - this.oldMouseY;
 
+          this.keepCardInCanvas(this.cardToDrag);
           this.moveCardToBegginingOfBattlefieldArray(this.cardToDrag);
 
           this.oldMouseX = e.offsetX;
@@ -108,14 +109,34 @@ export class BattlefieldComponent implements OnInit {
     });
   }
 
+  keepCardInCanvas(card) {
+    if (card.x < 0) {
+      card.x = 0;
+    }
+
+    if ((card.x + card.width) > this.canvasElement.width) {
+      card.x = this.canvasElement.width - card.width;
+    }
+
+    if (card.y < 0) {
+      card.y = 0;
+    }
+
+    if ((card.y + card.height) > this.canvasElement.height) {
+      card.y = this.canvasElement.height - card.height;
+    }
+  }
+
   untapCard(card) {
     card.tapped = false;
     this.swapCardWidthAndHeight(card);
+    this.keepCardInCanvas(card);
   }
 
   tapCard(card) {
     card.tapped = true;
     this.swapCardWidthAndHeight(card);
+    this.keepCardInCanvas(card);
   }
 
   swapCardWidthAndHeight(card) {
