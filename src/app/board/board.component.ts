@@ -25,8 +25,10 @@ export class BoardComponent implements OnInit, OnDestroy {
   canvasContext;
   isDragging = false;
   battlefield = [];
-  mouseX;
-  mouseY;
+  oldMouseX;
+  oldMouseY;
+  currentMouseX;
+  currentMouseY;
   cardToDrag;
 
   modalActions = new EventEmitter<string|MaterializeAction>();
@@ -53,8 +55,8 @@ export class BoardComponent implements OnInit, OnDestroy {
 
     window.addEventListener(('mousedown'), (e) => {
       this.isDragging = true;
-      this.mouseX = e.clientX;
-      this.mouseY = e.clientY;
+      this.oldMouseX = e.offsetX;
+      this.oldMouseY = e.offsetY;
     });
 
     window.addEventListener(('mouseup'), (e) => {
@@ -68,22 +70,54 @@ export class BoardComponent implements OnInit, OnDestroy {
     });
 
     window.addEventListener(('mousemove'), (e) => {
+      this.currentMouseX = e.offsetX;
+      this.currentMouseY = e.offsetY;
       if (this.isDragging === true && e.srcElement === this.canvasElement) {
-        this.cardToDrag = this.battlefield.find((card) => {
-          return ((card.x < e.offsetX) && (e.offsetX < (card.x + card.width)) &&
-                  (card.y < e.offsetY) && (e.offsetY < (card.y + card.height)));
-        });
+        this.cardToDrag = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
 
         if (this.cardToDrag) {
-          this.cardToDrag.x += e.clientX - this.mouseX;
-          this.cardToDrag.y += e.clientY - this.mouseY;
+          this.cardToDrag.x += this.currentMouseX - this.oldMouseX;
+          this.cardToDrag.y += this.currentMouseY - this.oldMouseY;
 
           this.moveCardToBegginingOfBattlefieldArray(this.cardToDrag);
 
-          this.mouseX = e.clientX;
-          this.mouseY = e.clientY;
+          this.oldMouseX = e.offsetX;
+          this.oldMouseY = e.offsetY;
         }
       }
+    });
+
+    window.addEventListener(('keydown'), (e) => {
+      // tap a card
+      if (e.key === 't') {
+        const cardToTap = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
+        if (cardToTap && !cardToTap.tapped) {
+          cardToTap.tapped = true;
+          [cardToTap.width, cardToTap.height] = [cardToTap.height, cardToTap.width];
+        }
+        this.pusherChannel.trigger(('client-move-card'), {
+          card: cardToTap
+        });
+      }
+
+      // untap a card
+      if (e.key === 'u') {
+        const cardToUntap = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
+        if (cardToUntap && cardToUntap.tapped) {
+          cardToUntap.tapped = false;
+          [cardToUntap.width, cardToUntap.height] = [cardToUntap.height, cardToUntap.width];
+        }
+        this.pusherChannel.trigger(('client-move-card'), {
+          card: cardToUntap
+        });
+      }
+    });
+  }
+
+  findCardOnCanvas(x, y) {
+    return this.battlefield.find((card) => {
+      return ((card.x < x) && (x < (card.x + card.width)) &&
+              (card.y < y) && (y < (card.y + card.height)));
     });
   }
 
@@ -104,7 +138,15 @@ export class BoardComponent implements OnInit, OnDestroy {
     for (const card of this.battlefield) {
       const img = new Image();
       img.src = card.imageUrls.small;
-      this.canvasContext.drawImage(img, card.x, card.y);
+      if (card.tapped) {
+        this.canvasContext.save();
+        this.canvasContext.translate(card.x, card.y);
+        this.canvasContext.rotate(90 * Math.PI / 180);
+        this.canvasContext.drawImage(img, 0, 0, card.height, -card.width);
+        this.canvasContext.restore();
+      } else {
+        this.canvasContext.drawImage(img, card.x, card.y, card.width, card.height);
+      }
     }
 
     requestAnimationFrame(() => this.animateCanvas());
@@ -247,6 +289,9 @@ export class BoardComponent implements OnInit, OnDestroy {
 
       cardToMove.x = obj.card.x;
       cardToMove.y = obj.card.y;
+      cardToMove.width = obj.card.width;
+      cardToMove.height = obj.card.height;
+      cardToMove.tapped = obj.card.tapped;
 
       this.moveCardToBegginingOfBattlefieldArray(cardToMove);
     });
