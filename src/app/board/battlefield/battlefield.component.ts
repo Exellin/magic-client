@@ -98,15 +98,51 @@ export class BattlefieldComponent implements OnInit {
       if (e.key === 'r') {
         const cardToRecall = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
         if (cardToRecall) {
-          this.recallCardToHand(this.currentUsername, cardToRecall);
+          this.sendCardFromBattlefieldToZone(this.currentUsername, cardToRecall, 'hand');
 
-          this.pusherChannel.trigger(('client-recall-card'), {
+          this.pusherChannel.trigger(('client-change-card-zone'), {
             username: this.currentUsername,
-            card: cardToRecall
+            card: cardToRecall,
+            zone: 'hand'
+          });
+        }
+      }
+
+      // place card in graveyard
+      if (e.key === 'b') {
+        const cardToBury = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
+        if (cardToBury) {
+          this.sendCardFromBattlefieldToZone(this.currentUsername, cardToBury, 'graveyard');
+
+          this.pusherChannel.trigger(('client-change-card-zone'), {
+            username: this.currentUsername,
+            card: cardToBury,
+            zone: 'graveyard'
           });
         }
       }
     });
+  }
+
+  sendCardFromBattlefieldToZone(username, card, zone) {
+    if (card.tapped) {
+      this.untapCard(card);
+    }
+
+    const matchedPlayer = this.players.find((player) => {
+      return player.username === username;
+    });
+
+    if (matchedPlayer.deck._id === card.deckId) {
+      const cardIndex = this.battlefield.findIndex((cardToFind) => {
+        return card.libraryId === cardToFind.libraryId;
+      });
+
+      this.battlefield.splice(cardIndex, 1);
+      matchedPlayer[zone].push(card);
+    } else if (username === this.currentUsername) {
+      toast(`You can only send your own cards to your ${zone}`, 5000);
+    }
   }
 
   keepCardInCanvas(card) {
@@ -141,26 +177,6 @@ export class BattlefieldComponent implements OnInit {
 
   swapCardWidthAndHeight(card) {
     [card.width, card.height] = [card.height, card.width];
-  }
-
-  recallCardToHand(username, cardToRecall) {
-    if (cardToRecall.tapped) {
-      this.untapCard(cardToRecall);
-    }
-    const matchedPlayer = this.players.find((player) => {
-      return player.username === username;
-    });
-
-    if (matchedPlayer.deck._id === cardToRecall.deckId) {
-      const cardIndex = this.battlefield.findIndex((card) => {
-        return card.libraryId === cardToRecall.libraryId;
-      });
-
-      this.battlefield.splice(cardIndex, 1);
-      matchedPlayer.hand.push(cardToRecall);
-    } else {
-      toast('You can only recall cards in your deck', 5000);
-    }
   }
 
   findCardOnCanvas(x, y) {
@@ -212,8 +228,8 @@ export class BattlefieldComponent implements OnInit {
       this.moveCardToBegginingOfBattlefieldArray(cardToMove);
     });
 
-    this.pusherChannel.bind('client-recall-card', obj => {
-      this.recallCardToHand(obj.username, obj.card);
+    this.pusherChannel.bind('client-change-card-zone', obj => {
+      this.sendCardFromBattlefieldToZone(obj.username, obj.card, obj.zone);
     });
   }
 

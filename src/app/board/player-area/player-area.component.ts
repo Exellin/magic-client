@@ -20,6 +20,7 @@ export class PlayerAreaComponent implements OnInit {
   ngOnInit() {
     this.player.library = [];
     this.player.hand = [];
+    this.player.graveyard = [];
 
     if (this.player.username === this.currentUsername) {
       this.isCurrentUser = true;

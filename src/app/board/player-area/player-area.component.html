@@ -1,7 +1,8 @@
 <div>{{ player.username }}</div>
 <div *ngIf='player.deckLockedIn'>Cards: {{ player.library.length }}</div>
 <button *ngIf='isCurrentUser && !player.deckLockedIn' class='waves-effect btn' (click)=lockInDeck()>Lock In {{ player.deck.name }}</button>
-<div class='library-and-hand'>
+<div class='card-zones'>
+  <img *ngIf='player.graveyard.length > 0' class='small-card' src='{{ player.graveyard[player.graveyard.length -1].imageUrls.small }}'>
   <img *ngIf='player.deckLockedIn' class='small-card' (click)='drawCard()' src='{{ cardBackUrl }}'>
   <div *ngIf='player.hand.length > 0' class='hand'>
     <span *ngFor='let card of player.hand'>
