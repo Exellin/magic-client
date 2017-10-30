@@ -22,6 +22,9 @@
 
 .hand {
   display: inline-flex;
-  overflow-x: scroll;
   border: 8px inset #c9bea8;
+}
+
+.hand-container {
+  overflow-x: scroll;
 }

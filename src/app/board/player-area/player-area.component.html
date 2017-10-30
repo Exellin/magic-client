@@ -14,7 +14,7 @@
     <span class='username'>{{ player.username }}</span>
   </div>
 
-  <div>
+  <div class='hand-container'>
     <p>Hand: {{ player.hand.length }} cards</p>
     <div *ngIf='player.hand.length > 0' class='hand'>
       <span *ngFor='let card of player.hand' class='small-card'>
@@ -24,4 +24,3 @@
     </div>
   </div>
 </div>
-
