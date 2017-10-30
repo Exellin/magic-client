@@ -5,6 +5,19 @@
 
 .card-zones {
   display: flex;
+  p {
+    margin: 0
+  }
+}
+
+.nowrap {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.username {
+  display: flex;
+  justify-content: space-around;
 }
 
 .hand {
