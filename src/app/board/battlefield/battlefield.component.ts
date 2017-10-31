@@ -121,6 +121,20 @@ export class BattlefieldComponent implements OnInit {
           });
         }
       }
+
+      // place card in exile
+      if (e.key === 'e') {
+        const cardToExile = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
+        if (cardToExile) {
+          this.sendCardFromBattlefieldToZone(this.currentUsername, cardToExile, 'exile');
+
+          this.pusherChannel.trigger(('client-change-card-zone'), {
+            username: this.currentUsername,
+            card: cardToExile,
+            zone: 'exile'
+          });
+        }
+      }
     });
   }
 

@@ -3,8 +3,12 @@
   <div>
     <div class='nowrap'>
       <div class='small-card'>
+        <p>Exile: {{ player.exile.length }} cards</p>
+        <img *ngIf='player.exile.length > 0' src='{{ player.exile[player.exile.length -1].imageUrls.small }}'>
+      </div>
+      <div class='small-card'>
         <p>Graveyard: {{ player.graveyard.length }} cards</p>
-        <img *ngIf='player.graveyard.length > 0' class='small-card' src='{{ player.graveyard[player.graveyard.length -1].imageUrls.small }}'>
+        <img *ngIf='player.graveyard.length > 0' src='{{ player.graveyard[player.graveyard.length -1].imageUrls.small }}'>
       </div>
       <div>
         <p>Library: {{ player.library.length }} cards</p>

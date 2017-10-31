@@ -21,6 +21,7 @@ export class PlayerAreaComponent implements OnInit {
     this.player.library = [];
     this.player.hand = [];
     this.player.graveyard = [];
+    this.player.exile = [];
 
     if (this.player.username === this.currentUsername) {
       this.isCurrentUser = true;
