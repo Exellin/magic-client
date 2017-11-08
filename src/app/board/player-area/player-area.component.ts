@@ -42,12 +42,13 @@ export class PlayerAreaComponent implements OnInit {
     }
   }
 
-  convertLibraryToArrayOfIds(library) {
-    const IdArray = [];
+  convertLibraryToCardsWithIds(library) {
+    const cardArray = [];
     for (const card of library) {
-      IdArray.push(card.libraryId);
+      const cardToSend = [card.libraryId, card.multiverseid];
+      cardArray.push(cardToSend);
     }
-    return IdArray;
+    return cardArray;
   }
 
   shuffleLibrary(library) {
@@ -56,9 +57,9 @@ export class PlayerAreaComponent implements OnInit {
       const j = Math.floor(Math.random() * (i + 1));
       [library[i], library[j]] = [library[j], library[i]];
     }
-    const IdArray = this.convertLibraryToArrayOfIds(library);
+    const cardArray = this.convertLibraryToCardsWithIds(library);
     this.pusherChannel.trigger('client-shuffle-library', {
-      IdArray: IdArray,
+      cardArray: cardArray,
       username: this.currentUsername
     });
   }
