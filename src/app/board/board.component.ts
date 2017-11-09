@@ -22,7 +22,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   currentUsername;
   battlefield = [];
 
-  modalActions = new EventEmitter<string|MaterializeAction>();
+  decksModal = new EventEmitter<string|MaterializeAction>();
 
   constructor(
     private deckService: DeckService,
@@ -176,12 +176,12 @@ export class BoardComponent implements OnInit, OnDestroy {
     });
   }
 
-  openModal() {
-    this.modalActions.emit({action: 'modal', params: ['open']});
+  openDecksModal() {
+    this.decksModal.emit({action: 'modal', params: ['open']});
   }
 
-  closeModal() {
-    this.modalActions.emit({action: 'modal', params: ['close']});
+  closeDecksModal() {
+    this.decksModal.emit({action: 'modal', params: ['close']});
   }
 
   setCurrentUserDecks(username) {
