@@ -1,5 +1,6 @@
-import { Component, OnInit, Input, OnChanges } from '@angular/core';
+import { Component, EventEmitter, OnInit, Input, OnChanges } from '@angular/core';
 import { toast } from 'angular2-materialize';
+import { MaterializeAction } from 'angular2-materialize';
 
 @Component({
   selector: 'app-player-area',
@@ -14,6 +15,7 @@ export class PlayerAreaComponent implements OnInit {
   @Input() battlefield;
   isCurrentUser;
   cardBackUrl = 'https://mtg.gamepedia.com/media/mtg.gamepedia.com/f/f8/Magic_card_back.jpg?version=4694fa6f8c95cfc758855c8ed4c4d0c0';
+  libraryModal = new EventEmitter<string|MaterializeAction>();
 
   constructor() {}
 
@@ -25,7 +27,27 @@ export class PlayerAreaComponent implements OnInit {
 
     if (this.player.username === this.currentUsername) {
       this.isCurrentUser = true;
+
+      window.addEventListener(('keydown'), (e) => {
+        // search through library
+        if (e.key === 's') {
+          const hoveredElements = document.querySelectorAll(':hover');
+          const hoveredElement = hoveredElements[hoveredElements.length - 1];
+
+          if (hoveredElement.classList.contains('library')) {
+            if (hoveredElement.parentElement.parentElement.id === this.currentUsername) {
+              this.libraryModal.emit({action: 'modal', params: ['open']});
+            } else {
+              toast('You can only search through your own library', 5000);
+            }
+          }
+        }
+      });
     }
+  }
+
+  closeLibraryModal() {
+    this.libraryModal.emit({action: 'modal', params: ['close']});
   }
 
   createLibrary(deck) {
