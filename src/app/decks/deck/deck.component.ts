@@ -91,22 +91,22 @@ export class DeckComponent implements OnInit {
 
       if (!parsedQuantity) {
         toast(`${quantityString} is not a number`, 5000);
-        resolve();
+        return resolve();
       }
 
       if (!cardName) {
         toast(`no card name found next to ${quantityString}`, 5000);
-        resolve();
+        return resolve();
       }
 
       if (parsedQuantity > 100) {
         toast(`Can only import a max of 100 ${cardName} at a time`, 5000);
-        resolve();
+        return resolve();
       }
 
       if (parsedQuantity < 1) {
         toast(`Can only import a positive number of ${cardName}`, 5000);
-        resolve();
+        return resolve();
       }
 
       const match = this.deck.cards.find((card) => {
@@ -155,9 +155,9 @@ export class DeckComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.cardsService.getCardFromApi(cardName).subscribe(
         res => {
-          if (!res.cards) {
-            toast(`${cardName} could not be imported`, 5000);
-            resolve();
+          if (res.cards.length === 0) {
+            toast(`${cardName} is not a valid card name`, 5000);
+            return resolve();
           }
 
           let fetchedCard = res.cards[0];
