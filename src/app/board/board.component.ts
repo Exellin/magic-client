@@ -56,9 +56,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.pusherChannel.bind('pusher:member_added', member => {
       toast(`${member.info.username} joined the game`, 5000);
 
-      const match = this.players.find((player) => {
-        return player.username === member.info.username;
-      });
+      const match = this.players.find(player => player.username === member.info.username);
 
       if (!match) {
         this.players.push(member.info);
@@ -104,10 +102,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   assignDeck(deck) {
-    const match = this.players.find((player) => {
-      return player.username === deck.owner.username;
-    });
-    const playerIndex = this.players.indexOf(match);
+    const playerIndex = this.players.findIndex(player => player.username === deck.owner.username);
 
     this.deckService.getDeck(deck._id).subscribe(
       res => {
@@ -129,22 +124,16 @@ export class BoardComponent implements OnInit, OnDestroy {
     });
 
     this.pusherChannel.bind('client-draw-card', obj => {
-      const playerIndex = this.players.findIndex((player) => {
-        return player.username === obj.username;
-      });
+      const playerIndex = this.players.findIndex(player => player.username === obj.username);
       this.players[playerIndex].hand.push(this.players[playerIndex].library.shift());
     });
 
     this.pusherChannel.bind('client-shuffle-library', obj => {
       const library = [];
-      const playerIndex = this.players.findIndex((player) => {
-        return player.username === obj.username;
-      });
+      const playerIndex = this.players.findIndex(player => player.username === obj.username);
 
       for (const card of obj.cardArray) {
-        const match = this.players[playerIndex].deck.cards.find((cardInDeck) => {
-          return card[1] === cardInDeck.multiverseid;
-        });
+        const match = this.players[playerIndex].deck.cards.find(cardInDeck => card[1] === cardInDeck.multiverseid);
         match.libraryId = card[0];
         library.push(match);
       }
@@ -153,18 +142,12 @@ export class BoardComponent implements OnInit, OnDestroy {
     });
 
     this.pusherChannel.bind('client-lock-in-deck', obj => {
-      const playerIndex = this.players.findIndex((player) => {
-        return player.username === obj.username;
-      });
-
+      const playerIndex = this.players.findIndex(player => player.username === obj.username);
       this.players[playerIndex].deckLockedIn = true;
     });
 
     this.pusherChannel.bind('client-place-card-on-battlefield', obj => {
-      const playerIndex = this.players.findIndex((player) => {
-        return player.username === obj.username;
-      });
-
+      const playerIndex = this.players.findIndex(player => player.username === obj.username);
       this.players[playerIndex].hand.splice(this.players[playerIndex].hand.indexOf(obj.card), 1);
       this.battlefield.push(obj.card);
     });

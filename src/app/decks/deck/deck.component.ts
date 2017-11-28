@@ -109,9 +109,7 @@ export class DeckComponent implements OnInit {
         return resolve();
       }
 
-      const match = this.deck.cards.find((card) => {
-        return card.name.toUpperCase() === cardName.toUpperCase();
-      });
+      const match = this.deck.cards.find(card => card.name.toUpperCase() === cardName.toUpperCase());
 
       if (match) {
         match.quantity += parsedQuantity;
