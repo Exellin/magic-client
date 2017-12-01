@@ -6,8 +6,12 @@ import { CardsService } from './cards.service';
 describe('CardsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpModule],
-      providers: [CardsService]
+      imports: [
+        HttpModule
+      ],
+      providers: [
+        CardsService
+      ]
     });
   });
 

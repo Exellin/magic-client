@@ -1,5 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpModule } from '@angular/http';
+import { RouterTestingModule } from '@angular/router/testing';
 
+import { AuthService } from '../auth/auth.service';
 import { NavbarComponent } from './navbar.component';
 
 describe('NavbarComponent', () => {
@@ -8,7 +11,16 @@ describe('NavbarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NavbarComponent ]
+      declarations: [
+        NavbarComponent
+      ],
+      imports: [
+        HttpModule,
+        RouterTestingModule
+      ],
+      providers: [
+        AuthService
+      ]
     })
     .compileComponents();
   }));
@@ -19,8 +31,7 @@ describe('NavbarComponent', () => {
     fixture.detectChanges();
   });
 
-  // commented out until I can figure out how to bind routerLinkActive to li in the test
-  // it('should be created', () => {
-  //   expect(component).toBeTruthy();
-  // });
+  it('should be created', () => {
+    expect(component).toBeTruthy();
+  });
 });

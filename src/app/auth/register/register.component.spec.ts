@@ -1,11 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-import { RegisterComponent } from './register.component';
-import { RouterTestingModule } from '@angular/router/testing';
 import { HttpModule } from '@angular/http';
 import { NgxErrorsModule } from '@ultimate/ngxerrors';
+import { ReactiveFormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { AuthService } from '../auth.service';
+import { NavbarComponent } from '../../navbar/navbar.component';
+import { RegisterComponent } from '../register/register.component';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
@@ -13,14 +14,18 @@ describe('RegisterComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RegisterComponent ],
+      declarations: [
+        NavbarComponent,
+        RegisterComponent
+      ],
       imports: [
+        HttpModule,
+        NgxErrorsModule,
         ReactiveFormsModule,
-        RouterTestingModule,
-        HttpModule],
+        RouterTestingModule
+      ],
       providers: [
         AuthService,
-        NgxErrorsModule
       ]
     })
     .compileComponents();

@@ -1,11 +1,17 @@
 import { TestBed, inject } from '@angular/core/testing';
+import { HttpModule } from '@angular/http';
 
 import { DeckService } from './deck.service';
 
 describe('DeckService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [DeckService]
+      imports: [
+        HttpModule
+      ],
+      providers: [
+        DeckService
+      ]
     });
   });
 

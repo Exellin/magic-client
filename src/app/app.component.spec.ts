@@ -1,27 +1,35 @@
 import { TestBed, async } from '@angular/core/testing';
-import { HttpModule } from '@angular/http';
+import { MaterializeModule } from 'angular2-materialize';
+import { ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { AppComponent } from './app.component';
-import { BoardComponent } from './board/board.component';
-import { CardsService } from './cards/cards.service';
-import { NavbarComponent } from './navbar/navbar.component';
 import { AuthModule } from './auth/auth.module';
+import { BattlefieldComponent } from './board/battlefield/battlefield.component';
+import { BoardComponent } from './board/board.component';
+import { HomeComponent } from './home/home.component';
+import { NavbarModule } from './navbar/navbar.module';
+import { PlayerAreaComponent } from './board/player-area/player-area.component';
+import { ProfileModule } from './profile/profile.module';
 
 describe('AppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
         AppComponent,
+        BattlefieldComponent,
         BoardComponent,
-        NavbarComponent
+        HomeComponent,
+        PlayerAreaComponent,
       ],
       imports: [
         AuthModule,
-        HttpModule,
+        MaterializeModule,
+        NavbarModule,
+        ProfileModule,
+        ReactiveFormsModule,
         RouterTestingModule
-      ],
-      providers: [CardsService]
+      ]
     }).compileComponents();
   }));
 

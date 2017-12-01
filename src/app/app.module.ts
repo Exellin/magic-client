@@ -5,22 +5,22 @@ import { HttpModule } from '@angular/http';
 import { MaterializeModule } from 'angular2-materialize';
 
 import { AppComponent } from './app.component';
-import { BoardComponent } from './board/board.component';
-import { RoutingModule } from './routing.module';
 import { AuthModule } from './auth/auth.module';
-import { ProfileModule } from './profile/profile.module';
+import { BattlefieldComponent } from './board/battlefield/battlefield.component';
+import { BoardComponent } from './board/board.component';
 import { HomeComponent } from './home/home.component';
 import { NavbarModule } from './navbar/navbar.module';
 import { PlayerAreaComponent } from './board/player-area/player-area.component';
-import { BattlefieldComponent } from './board/battlefield/battlefield.component';
+import { ProfileModule } from './profile/profile.module';
+import { RoutingModule } from './routing.module';
 
 @NgModule({
   declarations: [
     AppComponent,
+    BattlefieldComponent,
     BoardComponent,
     HomeComponent,
-    PlayerAreaComponent,
-    BattlefieldComponent
+    PlayerAreaComponent
   ],
   imports: [
     AuthModule,
