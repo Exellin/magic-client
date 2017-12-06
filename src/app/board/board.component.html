@@ -18,8 +18,6 @@
 </div>
 
 <div>
-  <a class='waves-effect waves-light btn modal-trigger' href='#decksModal' (click)='openDecksModal()'>Select Deck</a>
-
   <button class='waves-effect btn' (click)='updatePlayerData()'>Sync board for other players</button>
 
   <button class='waves-effect btn' (click)='toggleNavbar()'>Toggle Navbar</button>
@@ -29,8 +27,5 @@
   <div class='modal-content'>
     <h4>Decks</h4>
     <a *ngFor='let deck of currentUserDecks' class='modal-action modal-close waves-effect waves-green btn' (click)='selectDeck(deck)'>{{ deck.name }}</a>
-  </div>
-  <div class='modal-footer'>
-    <a class='waves-effect waves-green btn-flat' (click)='closeDecksModal()'>Close</a>
   </div>
 </div>

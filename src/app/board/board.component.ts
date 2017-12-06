@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, EventEmitter, AfterViewInit } from '@angular/core';
 import { toast } from 'angular2-materialize';
 import { MaterializeAction } from 'angular2-materialize';
 
@@ -13,7 +13,7 @@ declare const Pusher;
   styleUrls: ['./board.component.scss']
 })
 
-export class BoardComponent implements OnInit, OnDestroy {
+export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
   pusherChannel;
   gameId;
   players = [];
@@ -32,6 +32,10 @@ export class BoardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.initPusher();
     this.listenForChanges();
+  }
+
+  ngAfterViewInit() {
+    this.decksModal.emit({action: 'modal', params: ['open']});
   }
 
   ngOnDestroy() {
@@ -157,14 +161,6 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.pusherChannel.trigger('client-update-player-data', {
       players: this.players
     });
-  }
-
-  openDecksModal() {
-    this.decksModal.emit({action: 'modal', params: ['open']});
-  }
-
-  closeDecksModal() {
-    this.decksModal.emit({action: 'modal', params: ['close']});
   }
 
   setCurrentUserDecks(username) {
