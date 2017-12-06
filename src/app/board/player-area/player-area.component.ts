@@ -20,7 +20,6 @@ export class PlayerAreaComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    this.player.library = [];
     this.player.hand = [];
     this.player.graveyard = [];
     this.player.exile = [];
@@ -48,42 +47,6 @@ export class PlayerAreaComponent implements OnInit {
 
   closeLibraryModal() {
     this.libraryModal.emit({action: 'modal', params: ['close']});
-  }
-
-  createLibrary(deck) {
-    let id = 0;
-    for (const card of deck.cards) {
-      for (let i = 0; i < card.quantity; i++) {
-        const cardWithId = {
-          ...card,
-          libraryId: id
-        };
-        this.player.library.push(cardWithId);
-        id++;
-      }
-    }
-  }
-
-  convertLibraryToCardsWithIds(library) {
-    const cardArray = [];
-    for (const card of library) {
-      const cardToSend = [card.libraryId, card.multiverseid];
-      cardArray.push(cardToSend);
-    }
-    return cardArray;
-  }
-
-  shuffleLibrary(library) {
-    // Durstenfeld shuffle from https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm
-    for (let i = library.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [library[i], library[j]] = [library[j], library[i]];
-    }
-    const cardArray = this.convertLibraryToCardsWithIds(library);
-    this.pusherChannel.trigger('client-shuffle-library', {
-      cardArray: cardArray,
-      username: this.currentUsername
-    });
   }
 
   drawCard() {
@@ -115,15 +78,5 @@ export class PlayerAreaComponent implements OnInit {
 
     this.player.hand.splice(this.player.hand.indexOf(card), 1);
     this.battlefield.push(card);
-  }
-
-  lockInDeck() {
-    this.pusherChannel.trigger('client-lock-in-deck', {
-      username: this.currentUsername
-    });
-
-    this.player.deckLockedIn = true;
-    this.createLibrary(this.player.deck);
-    this.shuffleLibrary(this.player.library);
   }
 }

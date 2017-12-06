@@ -105,12 +105,52 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.assignDeck(deck);
   }
 
+  createLibrary(deck) {
+    let id = 0;
+    for (const card of deck.cards) {
+      for (let i = 0; i < card.quantity; i++) {
+        const cardWithId = {
+          ...card,
+          libraryId: id
+        };
+        const playerIndex = this.players.findIndex(player => player.username === deck.owner.username);
+        this.players[playerIndex].library.push(cardWithId);
+        id++;
+      }
+    }
+  }
+
+  convertLibraryToCardsWithIds(library) {
+    const cardArray = [];
+    for (const card of library) {
+      const cardToSend = [card.libraryId, card.multiverseid];
+      cardArray.push(cardToSend);
+    }
+    return cardArray;
+  }
+
+  shuffleLibrary(username, library) {
+    // Durstenfeld shuffle from https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm
+    for (let i = library.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [library[i], library[j]] = [library[j], library[i]];
+    }
+    const cardArray = this.convertLibraryToCardsWithIds(library);
+    this.pusherChannel.trigger('client-shuffle-library', {
+      cardArray,
+      username
+    });
+  }
+
   assignDeck(deck) {
     const playerIndex = this.players.findIndex(player => player.username === deck.owner.username);
 
     this.deckService.getDeck(deck._id).subscribe(
       res => {
         this.players[playerIndex].deck = res.data;
+        this.players[playerIndex].library = [];
+        this.createLibrary(this.players[playerIndex].deck);
+        this.shuffleLibrary(deck.owner.username, this.players[playerIndex].library);
       },
       err => {
         console.log(err);
@@ -143,11 +183,6 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
       }
 
       this.players[playerIndex].library = library;
-    });
-
-    this.pusherChannel.bind('client-lock-in-deck', obj => {
-      const playerIndex = this.players.findIndex(player => player.username === obj.username);
-      this.players[playerIndex].deckLockedIn = true;
     });
 
     this.pusherChannel.bind('client-place-card-on-battlefield', obj => {
