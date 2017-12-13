@@ -207,17 +207,21 @@ export class BattlefieldComponent implements OnInit {
   animateCanvas() {
     this.canvasContext.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
 
+    // Create an image for each card before drawing to canvas to prevent flickering
+    this.battlefield.map(card => {
+      card.img = new Image();
+      card.img.src = card.imageUrls.small;
+    });
+
     for (const card of this.battlefield) {
-      const img = new Image();
-      img.src = card.imageUrls.small;
       if (card.tapped) {
         this.canvasContext.save();
         this.canvasContext.translate(card.x, card.y);
         this.canvasContext.rotate(90 * Math.PI / 180);
-        this.canvasContext.drawImage(img, 0, 0, card.height, -card.width);
+        this.canvasContext.drawImage(card.img, 0, 0, card.height, -card.width);
         this.canvasContext.restore();
       } else {
-        this.canvasContext.drawImage(img, card.x, card.y, card.width, card.height);
+        this.canvasContext.drawImage(card.img, card.x, card.y, card.width, card.height);
       }
     }
 
