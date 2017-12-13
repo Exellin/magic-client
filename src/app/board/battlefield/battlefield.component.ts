@@ -12,7 +12,6 @@ export class BattlefieldComponent implements OnInit {
   @Input() pusherChannel;
   @Input() currentUsername;
   @Input() players;
-  isDragging = false;
   oldMouseX;
   oldMouseY;
   currentMouseX;
@@ -33,13 +32,12 @@ export class BattlefieldComponent implements OnInit {
 
   listenToMouseEvents() {
     window.addEventListener(('mousedown'), (e) => {
-      this.isDragging = true;
       this.oldMouseX = e.offsetX;
       this.oldMouseY = e.offsetY;
+      this.cardToDrag = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
     });
 
     window.addEventListener(('mouseup'), (e) => {
-      this.isDragging = false;
       if (this.cardToDrag) {
         this.pusherChannel.trigger('client-move-card', {
           card: this.cardToDrag
@@ -51,19 +49,16 @@ export class BattlefieldComponent implements OnInit {
     window.addEventListener(('mousemove'), (e) => {
       this.currentMouseX = e.offsetX;
       this.currentMouseY = e.offsetY;
-      if (this.isDragging === true && e.srcElement === this.canvasElement) {
-        this.cardToDrag = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
 
-        if (this.cardToDrag) {
-          this.cardToDrag.x += this.currentMouseX - this.oldMouseX;
-          this.cardToDrag.y += this.currentMouseY - this.oldMouseY;
+      if (this.cardToDrag) {
+        this.cardToDrag.x += this.currentMouseX - this.oldMouseX;
+        this.cardToDrag.y += this.currentMouseY - this.oldMouseY;
 
-          this.keepCardInCanvas(this.cardToDrag);
-          this.moveCardToBegginingOfBattlefieldArray(this.cardToDrag);
+        this.keepCardInCanvas(this.cardToDrag);
+        this.moveCardToEndOfBattlefieldArray(this.cardToDrag);
 
-          this.oldMouseX = e.offsetX;
-          this.oldMouseY = e.offsetY;
-        }
+        this.oldMouseX = e.offsetX;
+        this.oldMouseY = e.offsetY;
       }
     });
   }
@@ -194,7 +189,9 @@ export class BattlefieldComponent implements OnInit {
   }
 
   findCardOnCanvas(x, y) {
-    return this.battlefield.find((card) => {
+    // look in a reversed array so the found card is the last placed on the canvas (on top)
+    const reversedBattlefield = [...this.battlefield].reverse();
+    return reversedBattlefield.find((card) => {
       return ((card.x < x) && (x < (card.x + card.width)) &&
               (card.y < y) && (y < (card.y + card.height)));
     });
@@ -239,7 +236,7 @@ export class BattlefieldComponent implements OnInit {
       cardToMove.height = obj.card.height;
       cardToMove.tapped = obj.card.tapped;
 
-      this.moveCardToBegginingOfBattlefieldArray(cardToMove);
+      this.moveCardToEndOfBattlefieldArray(cardToMove);
     });
 
     this.pusherChannel.bind('client-change-card-zone', obj => {
@@ -247,8 +244,8 @@ export class BattlefieldComponent implements OnInit {
     });
   }
 
-  moveCardToBegginingOfBattlefieldArray(card) {
+  moveCardToEndOfBattlefieldArray(card) {
     this.battlefield.splice(this.battlefield.indexOf(card), 1);
-    this.battlefield.unshift(card);
+    this.battlefield.push(card);
   }
 }
