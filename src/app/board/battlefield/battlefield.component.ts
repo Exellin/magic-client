@@ -142,48 +142,6 @@ export class BattlefieldComponent implements OnInit {
           });
         }
       }
-
-      // recall card to hand
-      if (e.key === 'r') {
-        const cardToRecall = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
-        if (cardToRecall) {
-          this.sendCardFromBattlefieldToZone(this.currentUsername, cardToRecall, 'hand');
-
-          this.pusherChannel.trigger(('client-change-card-zone'), {
-            username: this.currentUsername,
-            card: cardToRecall,
-            zone: 'hand'
-          });
-        }
-      }
-
-      // place card in graveyard
-      if (e.key === 'b') {
-        const cardToBury = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
-        if (cardToBury) {
-          this.sendCardFromBattlefieldToZone(this.currentUsername, cardToBury, 'graveyard');
-
-          this.pusherChannel.trigger(('client-change-card-zone'), {
-            username: this.currentUsername,
-            card: cardToBury,
-            zone: 'graveyard'
-          });
-        }
-      }
-
-      // place card in exile
-      if (e.key === 'e') {
-        const cardToExile = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
-        if (cardToExile) {
-          this.sendCardFromBattlefieldToZone(this.currentUsername, cardToExile, 'exile');
-
-          this.pusherChannel.trigger(('client-change-card-zone'), {
-            username: this.currentUsername,
-            card: cardToExile,
-            zone: 'exile'
-          });
-        }
-      }
     });
   }
 
