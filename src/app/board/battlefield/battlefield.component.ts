@@ -16,7 +16,7 @@ export class BattlefieldComponent implements OnInit {
   oldMouseY;
   currentMouseX;
   currentMouseY;
-  cardToDrag;
+  isDraggingCard;
   canvasElement;
   canvasContext;
   isSelecting = false;
@@ -37,11 +37,9 @@ export class BattlefieldComponent implements OnInit {
     window.addEventListener(('mousedown'), (e) => {
       this.oldMouseX = e.offsetX;
       this.oldMouseY = e.offsetY;
-      this.cardToDrag = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
+      this.isDraggingCard = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
 
-      if (this.cardToDrag) {
-        this.isSelecting = false;
-      } else {
+      if (!this.isDraggingCard) {
         this.selected = [];
         this.battlefield.map(card => card.selected = false);
         this.selectArea.x = this.currentMouseX;
@@ -51,11 +49,11 @@ export class BattlefieldComponent implements OnInit {
     });
 
     window.addEventListener(('mouseup'), (e) => {
-      if (this.cardToDrag) {
+      if (this.isDraggingCard) {
         this.pusherChannel.trigger('client-move-cards', {
           cardsToSend: this.sendSelectedThroughPusher()
         });
-        this.cardToDrag = null;
+        this.isDraggingCard = false;
       } else if (this.isSelecting) {
         if (this.selectArea.width < 0) {
           this.selectArea.x += this.selectArea.width;
@@ -81,7 +79,7 @@ export class BattlefieldComponent implements OnInit {
       this.currentMouseX = e.offsetX;
       this.currentMouseY = e.offsetY;
 
-      if (this.selected.length > 0 && this.cardToDrag) {
+      if (this.selected.length > 0 && this.isDraggingCard) {
         if (this.selected.length > 100) {
           toast('You can only move up to 100 cards at a time', 5000);
           return;
@@ -112,8 +110,7 @@ export class BattlefieldComponent implements OnInit {
           return;
         }
 
-        const cardToTap = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
-        if (cardToTap) {
+        if (this.findCardOnCanvas(this.currentMouseX, this.currentMouseY)) {
           for (const card of this.selected) {
             this.tapCard(card);
           }
@@ -131,8 +128,7 @@ export class BattlefieldComponent implements OnInit {
           return;
         }
 
-        const cardToUntap = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
-        if (cardToUntap) {
+        if (this.findCardOnCanvas(this.currentMouseX, this.currentMouseY)) {
           for (const card of this.selected) {
             this.untapCard(card);
           }
