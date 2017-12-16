@@ -51,9 +51,21 @@ export class BattlefieldComponent implements OnInit {
 
     window.addEventListener(('mouseup'), (e) => {
       if (this.isDraggingCard) {
+        const cardsToSend = [];
+        for (const card of this.selected) {
+          const cardToSend = {
+            x: card.x,
+            y: card.y,
+            libraryId: card.libraryId,
+            deckId: card.deckId
+          };
+          cardsToSend.push(cardToSend);
+        }
+
         this.pusherChannel.trigger('client-move-cards', {
-          cardsToSend: this.sendSelectedThroughPusher()
+          cardsToSend
         });
+
         this.isDraggingCard = false;
       } else if (this.isSelecting) {
         if (this.selectArea.width < 0) {
@@ -116,8 +128,18 @@ export class BattlefieldComponent implements OnInit {
             this.tapCard(card);
           }
 
-          this.pusherChannel.trigger(('client-move-cards'), {
-            cardsToSend: this.sendSelectedThroughPusher()
+          const cardsToSend = [];
+          for (const card of this.selected) {
+            const cardToSend = {
+              tapped: card.tapped,
+              libraryId: card.libraryId,
+              deckId: card.deckId
+            };
+            cardsToSend.push(cardToSend);
+          }
+
+          this.pusherChannel.trigger('client-tap-cards', {
+            cardsToSend
           });
         }
       }
@@ -134,29 +156,49 @@ export class BattlefieldComponent implements OnInit {
             this.untapCard(card);
           }
 
-          this.pusherChannel.trigger(('client-move-cards'), {
-            cardsToSend: this.sendSelectedThroughPusher()
+          const cardsToSend = [];
+          for (const card of this.selected) {
+            const cardToSend = {
+              tapped: card.tapped,
+              libraryId: card.libraryId,
+              deckId: card.deckId
+            };
+            cardsToSend.push(cardToSend);
+          }
+
+          this.pusherChannel.trigger('client-tap-cards', {
+            cardsToSend
           });
         }
       }
 
-        // flip cards
-        if (e.key === 'f') {
-          if (this.selected.length > 100) {
-            toast('You can only flip up to 100 cards at a time', 5000);
-            return;
-          }
-
-          if (this.findCardOnCanvas(this.currentMouseX, this.currentMouseY)) {
-            for (const card of this.selected) {
-              this.flipCard(card);
-            }
-
-            this.pusherChannel.trigger(('client-move-cards'), {
-              cardsToSend: this.sendSelectedThroughPusher()
-            });
-          }
+      // flip cards
+      if (e.key === 'f') {
+        if (this.selected.length > 100) {
+          toast('You can only flip up to 100 cards at a time', 5000);
+          return;
         }
+
+        if (this.findCardOnCanvas(this.currentMouseX, this.currentMouseY)) {
+          for (const card of this.selected) {
+            this.flipCard(card);
+          }
+
+          const cardsToSend = [];
+          for (const card of this.selected) {
+            const cardToSend = {
+              flipped: card.flipped,
+              libraryId: card.libraryId,
+              deckId: card.deckId
+            };
+            cardsToSend.push(cardToSend);
+          }
+
+          this.pusherChannel.trigger(('client-flip-cards'), {
+            cardsToSend
+          });
+        }
+      }
     });
   }
 
@@ -301,17 +343,31 @@ export class BattlefieldComponent implements OnInit {
   listenToPusher() {
     this.pusherChannel.bind('client-move-cards', obj => {
       for (const cardObj of obj.cardsToSend) {
-        const cardToMove = this.battlefield.find((card) => {
-          return ((card.deckId === cardObj.deckId) && (card.libraryId === cardObj.libraryId));
-        });
-
+        const cardToMove = this.findCardInBattlefieldArray(cardObj);
         cardToMove.x = cardObj.x;
         cardToMove.y = cardObj.y;
-        cardToMove.width = cardObj.tapped ? 204 : 146;
-        cardToMove.height = cardObj.tapped ? 146 : 204;
-        cardToMove.tapped = cardObj.tapped;
 
         this.moveCardToEndOfBattlefieldArray(cardToMove);
+      }
+    });
+
+    this.pusherChannel.bind('client-tap-cards', obj => {
+      for (const cardObj of obj.cardsToSend) {
+        const cardToTap = this.findCardInBattlefieldArray(cardObj);
+        cardToTap.tapped = cardObj.tapped;
+        cardToTap.width = cardObj.tapped ? 204 : 146;
+        cardToTap.height = cardObj.tapped ? 146 : 204;
+
+        this.moveCardToEndOfBattlefieldArray(cardToTap);
+      }
+    });
+
+    this.pusherChannel.bind('client-flip-cards', obj => {
+      for (const cardObj of obj.cardsToSend) {
+        const cardToTransform = this.findCardInBattlefieldArray(cardObj);
+        cardToTransform.flipped = cardObj.flipped;
+
+        this.moveCardToEndOfBattlefieldArray(cardToTransform);
       }
     });
 
@@ -320,25 +376,14 @@ export class BattlefieldComponent implements OnInit {
     });
   }
 
+  findCardInBattlefieldArray(passedCard) {
+    return this.battlefield.find(card => {
+      return (card.deckId === passedCard.deckId) && (card.libraryId === passedCard.libraryId);
+    });
+  }
+
   moveCardToEndOfBattlefieldArray(card) {
     this.battlefield.splice(this.battlefield.indexOf(card), 1);
     this.battlefield.push(card);
-  }
-
-  sendSelectedThroughPusher() {
-    const cardsToSend = [];
-    for (const card of this.selected) {
-      const cardToSend = {
-        x: card.x,
-        y: card.y,
-        tapped: card.tapped,
-        flipped: card.flipped,
-        libraryId: card.libraryId,
-        deckId: card.deckId
-      };
-      cardsToSend.push(cardToSend);
-    }
-
-    return cardsToSend;
   }
 }
