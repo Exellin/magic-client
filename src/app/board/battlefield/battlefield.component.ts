@@ -19,6 +19,9 @@ export class BattlefieldComponent implements OnInit {
   cardToDrag;
   canvasElement;
   canvasContext;
+  isSelecting = false;
+  selectArea = {x: 0, y: 0, width: 0, height: 0};
+  selected = [];
 
   constructor() {}
 
@@ -35,14 +38,42 @@ export class BattlefieldComponent implements OnInit {
       this.oldMouseX = e.offsetX;
       this.oldMouseY = e.offsetY;
       this.cardToDrag = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
+
+      if (this.cardToDrag) {
+        this.isSelecting = false;
+      } else {
+        this.selected = [];
+        this.battlefield.map(card => card.selected = false);
+        this.selectArea.x = this.currentMouseX;
+        this.selectArea.y = this.currentMouseY;
+        this.isSelecting = true;
+      }
     });
 
     window.addEventListener(('mouseup'), (e) => {
       if (this.cardToDrag) {
-        this.pusherChannel.trigger('client-move-card', {
-          card: this.cardToDrag
+        this.pusherChannel.trigger('client-move-cards', {
+          cardsToSend: this.sendSelectedThroughPusher()
         });
         this.cardToDrag = null;
+      } else if (this.isSelecting) {
+        if (this.selectArea.width < 0) {
+          this.selectArea.x += this.selectArea.width;
+          this.selectArea.width *= -1;
+        }
+        if (this.selectArea.height < 0) {
+          this.selectArea.y += this.selectArea.height;
+          this.selectArea.height *= -1;
+        }
+        for (const card of this.battlefield) {
+          if (this.rectOverlap(card, this.selectArea)) {
+            this.selected.push(card);
+            card.selected = true;
+          }
+        }
+        this.selectArea.width = 0;
+        this.selectArea.height = 0;
+        this.isSelecting = false;
       }
     });
 
@@ -50,41 +81,64 @@ export class BattlefieldComponent implements OnInit {
       this.currentMouseX = e.offsetX;
       this.currentMouseY = e.offsetY;
 
-      if (this.cardToDrag) {
-        this.cardToDrag.x += this.currentMouseX - this.oldMouseX;
-        this.cardToDrag.y += this.currentMouseY - this.oldMouseY;
+      if (this.selected.length > 0 && this.cardToDrag) {
+        if (this.selected.length > 100) {
+          toast('You can only move up to 100 cards at a time', 5000);
+          return;
+        }
+        for (const cardToDrag of this.selected) {
+          cardToDrag.x += this.currentMouseX - this.oldMouseX;
+          cardToDrag.y += this.currentMouseY - this.oldMouseY;
 
-        this.keepCardInCanvas(this.cardToDrag);
-        this.moveCardToEndOfBattlefieldArray(this.cardToDrag);
+          this.keepCardInCanvas(cardToDrag);
+          this.moveCardToEndOfBattlefieldArray(cardToDrag);
+        }
 
         this.oldMouseX = e.offsetX;
         this.oldMouseY = e.offsetY;
+      } else if (this.isSelecting) {
+        this.selectArea.width = this.currentMouseX - this.selectArea.x;
+        this.selectArea.height = this.currentMouseY - this.selectArea.y;
       }
     });
   }
 
   listenToKeyboardEvents() {
     window.addEventListener(('keydown'), (e) => {
-      // tap a card
+      // tap cards
       if (e.key === 't') {
-        const cardToTap = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
-        if (cardToTap && !cardToTap.tapped) {
-          this.tapCard(cardToTap);
+        if (this.selected.length > 100) {
+          toast('You can only tap up to 100 cards at a time', 5000);
+          return;
+        }
 
-          this.pusherChannel.trigger(('client-move-card'), {
-            card: cardToTap
+        const cardToTap = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
+        if (cardToTap) {
+          for (const card of this.selected) {
+            this.tapCard(card);
+          }
+
+          this.pusherChannel.trigger(('client-move-cards'), {
+            cardsToSend: this.sendSelectedThroughPusher()
           });
         }
       }
 
-      // untap a card
+      // untap cards
       if (e.key === 'u') {
-        const cardToUntap = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
-        if (cardToUntap && cardToUntap.tapped) {
-          this.untapCard(cardToUntap);
+        if (this.selected.length > 100) {
+          toast('You can only untap up to 100 cards at a time', 5000);
+          return;
+        }
 
-          this.pusherChannel.trigger(('client-move-card'), {
-            card: cardToUntap
+        const cardToUntap = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
+        if (cardToUntap) {
+          for (const card of this.selected) {
+            this.untapCard(card);
+          }
+
+          this.pusherChannel.trigger(('client-move-cards'), {
+            cardsToSend: this.sendSelectedThroughPusher()
           });
         }
       }
@@ -173,15 +227,19 @@ export class BattlefieldComponent implements OnInit {
   }
 
   untapCard(card) {
-    card.tapped = false;
-    this.swapCardWidthAndHeight(card);
-    this.keepCardInCanvas(card);
+    if (card.tapped) {
+      card.tapped = false;
+      this.swapCardWidthAndHeight(card);
+      this.keepCardInCanvas(card);
+    }
   }
 
   tapCard(card) {
-    card.tapped = true;
-    this.swapCardWidthAndHeight(card);
-    this.keepCardInCanvas(card);
+    if (!card.tapped) {
+      card.tapped = true;
+      this.swapCardWidthAndHeight(card);
+      this.keepCardInCanvas(card);
+    }
   }
 
   swapCardWidthAndHeight(card) {
@@ -191,20 +249,28 @@ export class BattlefieldComponent implements OnInit {
   findCardOnCanvas(x, y) {
     // look in a reversed array so the found card is the last placed on the canvas (on top)
     const reversedBattlefield = [...this.battlefield].reverse();
-    return reversedBattlefield.find((card) => {
+    const foundCard = reversedBattlefield.find((card) => {
       return ((card.x < x) && (x < (card.x + card.width)) &&
               (card.y < y) && (y < (card.y + card.height)));
     });
+    if (foundCard && !foundCard.selected) {
+      this.selected = [];
+      this.battlefield.map(card => card.selected = false);
+      this.selected.push(foundCard);
+      foundCard.selected = true;
+    }
+    return foundCard;
   }
 
   buildCanvas() {
     this.canvasElement = document.querySelector('canvas');
-    this.canvasElement.width = 1800;
-    this.canvasElement.height = 400;
+    this.canvasElement.width = window.innerWidth;
+    this.canvasElement.height = window.innerHeight;
     this.canvasContext = this.canvasElement.getContext('2d');
   }
 
   animateCanvas() {
+    this.canvasContext.beginPath();
     this.canvasContext.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
 
     // Create an image for each card before drawing to canvas to prevent flickering
@@ -223,24 +289,45 @@ export class BattlefieldComponent implements OnInit {
       } else {
         this.canvasContext.drawImage(card.img, card.x, card.y, card.width, card.height);
       }
+
+      if (card.selected) {
+        this.canvasContext.strokeStyle = '#ffeb3b';
+        this.canvasContext.lineWidth = 5;
+        this.canvasContext.rect(card.x, card.y, card.width, card.height);
+        this.canvasContext.stroke();
+      }
+    }
+
+    if (this.isSelecting) {
+      this.canvasContext.strokeStyle = '#000000';
+      this.canvasContext.lineWidth = 1;
+      this.canvasContext.rect(this.selectArea.x, this.selectArea.y, this.selectArea.width, this.selectArea.height);
+      this.canvasContext.stroke();
     }
 
     requestAnimationFrame(() => this.animateCanvas());
   }
 
+  rectOverlap(rect1, rect2) {
+    return (!((rect1.y + rect1.height) < rect2.y || (rect2.y + rect2.height) < rect1.y ||
+              (rect1.x + rect1.width) < rect2.x || (rect2.x + rect2.width) < rect1.x));
+  }
+
   listenToPusher() {
-    this.pusherChannel.bind('client-move-card', obj => {
-      const cardToMove = this.battlefield.find((card) => {
-        return ((card.deckId === obj.card.deckId) && (card.libraryId === obj.card.libraryId));
-      });
+    this.pusherChannel.bind('client-move-cards', obj => {
+      for (const cardObj of obj.cardsToSend) {
+        const cardToMove = this.battlefield.find((card) => {
+          return ((card.deckId === cardObj.deckId) && (card.libraryId === cardObj.libraryId));
+        });
 
-      cardToMove.x = obj.card.x;
-      cardToMove.y = obj.card.y;
-      cardToMove.width = obj.card.width;
-      cardToMove.height = obj.card.height;
-      cardToMove.tapped = obj.card.tapped;
+        cardToMove.x = cardObj.x;
+        cardToMove.y = cardObj.y;
+        cardToMove.width = cardObj.width;
+        cardToMove.height = cardObj.height;
+        cardToMove.tapped = cardObj.tapped;
 
-      this.moveCardToEndOfBattlefieldArray(cardToMove);
+        this.moveCardToEndOfBattlefieldArray(cardToMove);
+      }
     });
 
     this.pusherChannel.bind('client-change-card-zone', obj => {
@@ -251,5 +338,23 @@ export class BattlefieldComponent implements OnInit {
   moveCardToEndOfBattlefieldArray(card) {
     this.battlefield.splice(this.battlefield.indexOf(card), 1);
     this.battlefield.push(card);
+  }
+
+  sendSelectedThroughPusher() {
+    const cardsToSend = [];
+    for (const card of this.selected) {
+      const cardToSend = {
+        x: card.x,
+        y: card.y,
+        width: card.width,
+        height: card.height,
+        tapped: card.tapped,
+        libraryId: card.libraryId,
+        deckId: card.deckId
+      };
+      cardsToSend.push(cardToSend);
+    }
+
+    return cardsToSend;
   }
 }

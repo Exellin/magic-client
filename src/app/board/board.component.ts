@@ -150,7 +150,14 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
         this.players[playerIndex].deck = res.data;
         this.players[playerIndex].library = [];
         this.createLibrary(this.players[playerIndex].deck);
-        this.shuffleLibrary(deck.owner.username, this.players[playerIndex].library);
+        for (const card of this.players[playerIndex].library) {
+          card.width = 146;
+          card.height = 204;
+          card.x = 0;
+          card.y = 0;
+          card.deckId = this.players[playerIndex].deck._id;
+          this.battlefield.push(card);
+        }
       },
       err => {
         console.log(err);
