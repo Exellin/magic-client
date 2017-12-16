@@ -22,6 +22,7 @@ export class BattlefieldComponent implements OnInit {
   isSelecting = false;
   selectArea = {x: 0, y: 0, width: 0, height: 0};
   selected = [];
+  cardBackUrl = 'https://mtg.gamepedia.com/media/mtg.gamepedia.com/f/f8/Magic_card_back.jpg?version=4694fa6f8c95cfc758855c8ed4c4d0c0';
 
   constructor() {}
 
@@ -138,6 +139,24 @@ export class BattlefieldComponent implements OnInit {
           });
         }
       }
+
+        // flip cards
+        if (e.key === 'f') {
+          if (this.selected.length > 100) {
+            toast('You can only flip up to 100 cards at a time', 5000);
+            return;
+          }
+
+          if (this.findCardOnCanvas(this.currentMouseX, this.currentMouseY)) {
+            for (const card of this.selected) {
+              this.flipCard(card);
+            }
+
+            this.pusherChannel.trigger(('client-move-cards'), {
+              cardsToSend: this.sendSelectedThroughPusher()
+            });
+          }
+        }
     });
   }
 
@@ -196,6 +215,14 @@ export class BattlefieldComponent implements OnInit {
     }
   }
 
+  flipCard(card) {
+    if (card.flipped) {
+      card.flipped = false;
+    } else {
+      card.flipped = true;
+    }
+  }
+
   swapCardWidthAndHeight(card) {
     [card.width, card.height] = [card.height, card.width];
   }
@@ -230,7 +257,11 @@ export class BattlefieldComponent implements OnInit {
     // Create an image for each card before drawing to canvas to prevent flickering
     this.battlefield.map(card => {
       card.img = new Image();
-      card.img.src = card.imageUrls.small;
+      if (card.flipped) {
+        card.img.src = this.cardBackUrl;
+      } else {
+        card.img.src = card.imageUrls.small;
+      }
     });
 
     for (const card of this.battlefield) {
@@ -301,6 +332,7 @@ export class BattlefieldComponent implements OnInit {
         x: card.x,
         y: card.y,
         tapped: card.tapped,
+        flipped: card.flipped,
         libraryId: card.libraryId,
         deckId: card.deckId
       };
