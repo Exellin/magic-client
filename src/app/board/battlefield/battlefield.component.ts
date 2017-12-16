@@ -280,8 +280,8 @@ export class BattlefieldComponent implements OnInit {
 
         cardToMove.x = cardObj.x;
         cardToMove.y = cardObj.y;
-        cardToMove.width = cardObj.width;
-        cardToMove.height = cardObj.height;
+        cardToMove.width = cardObj.tapped ? 204 : 146;
+        cardToMove.height = cardObj.tapped ? 146 : 204;
         cardToMove.tapped = cardObj.tapped;
 
         this.moveCardToEndOfBattlefieldArray(cardToMove);
@@ -304,8 +304,6 @@ export class BattlefieldComponent implements OnInit {
       const cardToSend = {
         x: card.x,
         y: card.y,
-        width: card.width,
-        height: card.height,
         tapped: card.tapped,
         libraryId: card.libraryId,
         deckId: card.deckId
