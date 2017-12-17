@@ -132,7 +132,16 @@ export class DeckComponent implements OnInit {
           } else {
             const importPromise = this.importCardFromApi(cardName, parsedQuantity);
 
-            importPromise.then(() => {
+            importPromise.then((card: any) => {
+              if (card.layout === 'double-faced') {
+                const transformPromise = this.importCardFromApi(card.names[1], 0);
+                transformPromise.then((transformCard) => {
+                  resolve();
+                });
+                transformPromise.catch((err) => {
+                  reject(err);
+                });
+              }
               resolve();
             });
 
@@ -180,7 +189,7 @@ export class DeckComponent implements OnInit {
 
           const saveCardPromise = this.saveCard(cardToSave, quantity);
           saveCardPromise.then(() => {
-            resolve();
+            resolve(cardToSave);
           });
           saveCardPromise.catch((err) => {
             reject(err);
@@ -212,9 +221,12 @@ export class DeckComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.cardsService.saveCard(card).subscribe(
         res => {
-          const savedCard = res.data;
-          this.addCardToDeck(savedCard, quantity);
-          resolve();
+          // only save the card to the deck if it isn't a transform card
+          if (quantity > 0) {
+            const savedCard = res.data;
+            this.addCardToDeck(savedCard, quantity);
+            resolve();
+          }
         },
         err => {
           reject(err);

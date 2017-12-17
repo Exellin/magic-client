@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, EventEmitter, AfterViewInit } from '@angu
 import { toast } from 'angular2-materialize';
 import { MaterializeAction } from 'angular2-materialize';
 
+import { CardsService } from '../cards/cards.service';
 import { DeckService } from '../decks/deck.service';
 import { environment } from '../../environments/environment';
 import { ProfileService } from '../profile/profile.service';
@@ -25,6 +26,7 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
   decksModal = new EventEmitter<string|MaterializeAction>();
 
   constructor(
+    private cardsService: CardsService,
     private deckService: DeckService,
     private profileService: ProfileService
   ) {}
@@ -106,18 +108,55 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   createLibrary(deck) {
-    let id = 0;
-    for (const card of deck.cards) {
-      for (let i = 0; i < card.quantity; i++) {
-        const cardWithId = {
-          ...card,
-          libraryId: id
-        };
-        const playerIndex = this.players.findIndex(player => player.username === deck.owner.username);
-        this.players[playerIndex].library.push(cardWithId);
-        id++;
+    return new Promise((resolve, reject) => {
+      let id = 0;
+      for (const card of deck.cards) {
+        const hasTransformPromise = this.checkForTransform(card);
+
+        hasTransformPromise.then(() => {
+          for (let i = 0; i < card.quantity; i++) {
+            const cardWithId = {
+              ...card,
+              libraryId: id
+            };
+            const playerIndex = this.players.findIndex(player => player.username === deck.owner.username);
+            this.players[playerIndex].library.push(cardWithId);
+            id++;
+          }
+          resolve();
+        });
+
+        hasTransformPromise.catch((err) => {
+          reject(err);
+        });
       }
-    }
+    });
+  }
+
+  checkForTransform(card) {
+    return new Promise((resolve, reject) => {
+      if (card.layout !== 'double-faced') { return resolve(); }
+      this.cardsService.getCardFromDatabase(card.names[1]).subscribe(
+        res => {
+          card.transform = res.data;
+          card.transform.imageUrls = {};
+          const imageSizes = ['small', 'normal', 'large'];
+          for (const size of imageSizes) {
+            if (card.number) {
+              card.transform.imageUrls[size] =
+              `https://img.scryfall.com/cards/${size}/en/${card.transform.setCode.toLowerCase()}/${card.transform.number}.jpg`;
+            } else {
+              card.transform.imageUrls[size] =
+              `http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=${card.transform.multiverseid}&type=card`;
+            }
+          }
+          resolve();
+        },
+        err => {
+          reject(err);
+        }
+      );
+    });
   }
 
   convertLibraryToCardsWithIds(library) {
@@ -149,15 +188,21 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
       res => {
         this.players[playerIndex].deck = res.data;
         this.players[playerIndex].library = [];
-        this.createLibrary(this.players[playerIndex].deck);
-        for (const card of this.players[playerIndex].library) {
-          card.width = 146;
-          card.height = 204;
-          card.x = 0;
-          card.y = 0;
-          card.deckId = this.players[playerIndex].deck._id;
-          this.battlefield.push(card);
-        }
+        const createLibraryPromise = this.createLibrary(this.players[playerIndex].deck);
+        createLibraryPromise.then(() => {
+          for (const card of this.players[playerIndex].library) {
+            card.width = 146;
+            card.height = 204;
+            card.x = 0;
+            card.y = 0;
+            card.deckId = this.players[playerIndex].deck._id;
+            this.battlefield.push(card);
+          }
+        });
+
+        createLibraryPromise.catch((err) => {
+          console.log(err);
+        });
       },
       err => {
         console.log(err);

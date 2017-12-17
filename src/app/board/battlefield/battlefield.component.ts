@@ -199,6 +199,36 @@ export class BattlefieldComponent implements OnInit {
           });
         }
       }
+
+      // transform cards
+      if (e.key === 'r') {
+        if (this.selected.length > 100) {
+          toast('You can only transform up to 100 cards at a time', 5000);
+          return;
+        }
+
+        if (this.findCardOnCanvas(this.currentMouseX, this.currentMouseY)) {
+          for (const card of this.selected) {
+            if (card.layout === 'double-faced') {
+              this.transformCard(card);
+            }
+          }
+
+          const cardsToSend = [];
+          for (const card of this.selected) {
+            const cardToSend = {
+              transformed: card.transformed,
+              libraryId: card.libraryId,
+              deckId: card.deckId
+            };
+            cardsToSend.push(cardToSend);
+          }
+
+          this.pusherChannel.trigger(('client-transform-cards'), {
+            cardsToSend
+          });
+        }
+      }
     });
   }
 
@@ -265,6 +295,14 @@ export class BattlefieldComponent implements OnInit {
     }
   }
 
+  transformCard(card) {
+    if (card.transformed) {
+      card.transformed = false;
+    } else {
+      card.transformed = true;
+    }
+  }
+
   swapCardWidthAndHeight(card) {
     [card.width, card.height] = [card.height, card.width];
   }
@@ -301,6 +339,8 @@ export class BattlefieldComponent implements OnInit {
       card.img = new Image();
       if (card.flipped) {
         card.img.src = this.cardBackUrl;
+      } else if (card.transformed) {
+        card.img.src = card.transform.imageUrls.small;
       } else {
         card.img.src = card.imageUrls.small;
       }
@@ -364,8 +404,17 @@ export class BattlefieldComponent implements OnInit {
 
     this.pusherChannel.bind('client-flip-cards', obj => {
       for (const cardObj of obj.cardsToSend) {
+        const cardToFlip = this.findCardInBattlefieldArray(cardObj);
+        cardToFlip.flipped = cardObj.flipped;
+
+        this.moveCardToEndOfBattlefieldArray(cardToFlip);
+      }
+    });
+
+    this.pusherChannel.bind('client-transform-cards', obj => {
+      for (const cardObj of obj.cardsToSend) {
         const cardToTransform = this.findCardInBattlefieldArray(cardObj);
-        cardToTransform.flipped = cardObj.flipped;
+        cardToTransform.transformed = cardObj.transformed;
 
         this.moveCardToEndOfBattlefieldArray(cardToTransform);
       }
