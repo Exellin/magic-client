@@ -9,7 +9,6 @@ import { BattlefieldComponent } from './board/battlefield/battlefield.component'
 import { BoardComponent } from './board/board.component';
 import { HomeComponent } from './home/home.component';
 import { NavbarModule } from './navbar/navbar.module';
-import { PlayerAreaComponent } from './board/player-area/player-area.component';
 import { ProfileModule } from './profile/profile.module';
 
 describe('AppComponent', () => {
@@ -19,8 +18,7 @@ describe('AppComponent', () => {
         AppComponent,
         BattlefieldComponent,
         BoardComponent,
-        HomeComponent,
-        PlayerAreaComponent,
+        HomeComponent
       ],
       imports: [
         AuthModule,

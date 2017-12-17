@@ -238,27 +238,6 @@ export class BattlefieldComponent implements OnInit {
     });
   }
 
-  sendCardFromBattlefieldToZone(username, card, zone) {
-    if (card.tapped) {
-      this.untapCard(card);
-    }
-
-    const matchedPlayer = this.players.find((player) => {
-      return player.username === username;
-    });
-
-    if (matchedPlayer.deck._id === card.deckId) {
-      const cardIndex = this.battlefield.findIndex((cardToFind) => {
-        return card.libraryId === cardToFind.libraryId;
-      });
-
-      this.battlefield.splice(cardIndex, 1);
-      matchedPlayer[zone].push(card);
-    } else if (username === this.currentUsername) {
-      toast(`You can only send your own cards to your ${zone}`, 5000);
-    }
-  }
-
   keepCardInCanvas(card) {
     if (card.x < 0) {
       card.x = 0;
@@ -424,10 +403,6 @@ export class BattlefieldComponent implements OnInit {
         this.setCardImageSource(cardToTransform);
         this.moveCardToEndOfBattlefieldArray(cardToTransform);
       }
-    });
-
-    this.pusherChannel.bind('client-change-card-zone', obj => {
-      this.sendCardFromBattlefieldToZone(obj.username, obj.card, obj.zone);
     });
   }
 

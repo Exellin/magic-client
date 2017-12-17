@@ -7,7 +7,6 @@ import { BattlefieldComponent } from './battlefield/battlefield.component';
 import { BoardComponent } from './board.component';
 import { CardsService } from '../cards/cards.service';
 import { DeckService } from '../decks/deck.service';
-import { PlayerAreaComponent } from './player-area/player-area.component';
 import { ProfileService } from '../profile/profile.service';
 import { NavbarComponent } from '../navbar/navbar.component';
 
@@ -20,8 +19,7 @@ describe('BoardComponent', () => {
       declarations: [
         BattlefieldComponent,
         BoardComponent,
-        NavbarComponent,
-        PlayerAreaComponent
+        NavbarComponent
       ],
       imports: [
         HttpModule,

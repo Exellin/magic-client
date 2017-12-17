@@ -4,7 +4,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { BattlefieldComponent } from './battlefield.component';
 import { BoardComponent } from '../board.component';
-import { PlayerAreaComponent } from '../player-area/player-area.component';
 import { NavbarComponent } from '../../navbar/navbar.component';
 
 describe('BattlefieldComponent', () => {
@@ -16,7 +15,6 @@ describe('BattlefieldComponent', () => {
       declarations: [
         BattlefieldComponent,
         BoardComponent,
-        PlayerAreaComponent,
         NavbarComponent
       ],
       imports: [

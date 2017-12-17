@@ -19,7 +19,6 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
   gameId;
   players = [];
   currentUserDecks;
-  showNavbar = false;
   currentUsername;
   battlefield = [];
   cardWidth = 111;
@@ -250,12 +249,6 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  updatePlayerData() {
-    this.pusherChannel.trigger('client-update-player-data', {
-      players: this.players
-    });
-  }
-
   setCurrentUserDecks(username) {
     this.profileService.getUser(username).subscribe(
       res => {
@@ -265,10 +258,6 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
         console.log(err);
       }
     );
-  }
-
-  toggleNavbar() {
-    this.showNavbar = !this.showNavbar;
   }
 
   generateHandAreas() {

@@ -1,27 +1,5 @@
-<app-navbar *ngIf='showNavbar'></app-navbar>
-
-<div class='playing-area'>
-  <div class='player-areas'>
-    <div *ngFor='let player of players.slice(0, players.length/2)' class='player-area'>
-      <app-player-area *ngIf='player.deck' [player]='player' [pusherChannel]='pusherChannel'
-      [currentUsername]='currentUsername' [battlefield]='battlefield'></app-player-area>
-    </div>
-  </div>
-  <app-battlefield [battlefield]='battlefield' [pusherChannel]='pusherChannel' [cardWidth]='cardWidth'
-  [cardHeight]='cardHeight' [currentUsername]='currentUsername' [players]='players' ></app-battlefield>
-  <div class='player-areas'>
-    <div *ngFor='let player of players.slice(players.length/2, players.length)' class='player-area'>
-      <app-player-area *ngIf='player.deck' [player]='player' [pusherChannel]='pusherChannel'
-      [currentUsername]='currentUsername' [battlefield]='battlefield'></app-player-area>
-    </div>
-  </div>
-</div>
-
-<div>
-  <button class='waves-effect btn' (click)='updatePlayerData()'>Sync board for other players</button>
-
-  <button class='waves-effect btn' (click)='toggleNavbar()'>Toggle Navbar</button>
-</div>
+<app-battlefield [battlefield]='battlefield' [pusherChannel]='pusherChannel' [cardWidth]='cardWidth'
+[cardHeight]='cardHeight' [currentUsername]='currentUsername' [players]='players' ></app-battlefield>
 
 <div id='decksModal' class='modal' materialize='modal' [materializeParams]='[{dismissible: false}]' [materializeActions]='decksModal'>
   <div class='modal-content'>
