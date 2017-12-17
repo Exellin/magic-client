@@ -56,6 +56,7 @@ export class BattlefieldComponent implements OnInit {
         const cardsToSend = [];
         for (const card of this.selected) {
           this.hideCardInHand(card);
+          this.setCardImageSource(card);
           const cardToSend = {
             x: card.x,
             y: card.y,
@@ -185,6 +186,7 @@ export class BattlefieldComponent implements OnInit {
         if (this.findCardOnCanvas(this.currentMouseX, this.currentMouseY)) {
           for (const card of this.selected) {
             this.flipCard(card);
+            this.setCardImageSource(card);
           }
 
           const cardsToSend = [];
@@ -214,6 +216,7 @@ export class BattlefieldComponent implements OnInit {
           for (const card of this.selected) {
             if (card.layout === 'double-faced') {
               this.transformCard(card);
+              this.setCardImageSource(card);
             }
           }
 
@@ -337,18 +340,6 @@ export class BattlefieldComponent implements OnInit {
     this.canvasContext.beginPath();
     this.canvasContext.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
 
-    // Create an image for each card before drawing to canvas to prevent flickering
-    this.battlefield.map(card => {
-      card.img = new Image();
-      if (card.flipped || (card.revealedTo && card.revealedTo !== this.currentUsername)) {
-        card.img.src = this.cardBackUrl;
-      } else if (card.transformed) {
-        card.img.src = card.transform.imageUrls.small;
-      } else {
-        card.img.src = card.imageUrls.small;
-      }
-    });
-
     for (const card of this.battlefield) {
       if (card.tapped) {
         this.canvasContext.save();
@@ -420,6 +411,7 @@ export class BattlefieldComponent implements OnInit {
         const cardToFlip = this.findCardInBattlefieldArray(cardObj);
         cardToFlip.flipped = cardObj.flipped;
 
+        this.setCardImageSource(cardToFlip);
         this.moveCardToEndOfBattlefieldArray(cardToFlip);
       }
     });
@@ -429,6 +421,7 @@ export class BattlefieldComponent implements OnInit {
         const cardToTransform = this.findCardInBattlefieldArray(cardObj);
         cardToTransform.transformed = cardObj.transformed;
 
+        this.setCardImageSource(cardToTransform);
         this.moveCardToEndOfBattlefieldArray(cardToTransform);
       }
     });
@@ -457,6 +450,16 @@ export class BattlefieldComponent implements OnInit {
       } else {
         card.revealedTo = null;
       }
+    }
+  }
+
+  setCardImageSource(card) {
+    if (card.flipped || (card.revealedTo && card.revealedTo !== this.currentUsername)) {
+      card.img.src = this.cardBackUrl;
+    } else if (card.transformed) {
+      card.img.src = card.transform.imageUrls.small;
+    } else {
+      card.img.src = card.imageUrls.small;
     }
   }
 }

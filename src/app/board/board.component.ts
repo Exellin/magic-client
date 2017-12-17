@@ -199,6 +199,8 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
             card.height = this.cardHeight;
             card.x = 0;
             card.y = 0;
+            card.img = new Image();
+            card.img.src = card.imageUrls.small;
             card.deckId = this.players[playerIndex].deck._id;
             this.battlefield.push(card);
           }
