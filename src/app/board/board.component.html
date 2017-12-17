@@ -7,8 +7,8 @@
       [currentUsername]='currentUsername' [battlefield]='battlefield'></app-player-area>
     </div>
   </div>
-  <app-battlefield [battlefield]='battlefield' [pusherChannel]='pusherChannel'
-  [currentUsername]='currentUsername' [players]='players'></app-battlefield>
+  <app-battlefield [battlefield]='battlefield' [pusherChannel]='pusherChannel' [cardWidth]='cardWidth'
+  [cardHeight]='cardHeight' [currentUsername]='currentUsername' [players]='players' ></app-battlefield>
   <div class='player-areas'>
     <div *ngFor='let player of players.slice(players.length/2, players.length)' class='player-area'>
       <app-player-area *ngIf='player.deck' [player]='player' [pusherChannel]='pusherChannel'

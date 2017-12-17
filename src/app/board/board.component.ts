@@ -22,6 +22,8 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
   showNavbar = false;
   currentUsername;
   battlefield = [];
+  cardWidth = 111;
+  cardHeight = 153;
 
   decksModal = new EventEmitter<string|MaterializeAction>();
 
@@ -62,10 +64,10 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.pusherChannel.bind('pusher:member_added', member => {
       toast(`${member.info.username} joined the game`, 5000);
 
-      const match = this.players.find(player => player.username === member.info.username);
-
-      if (!match) {
+      if (!this.players.find(player => player.username === member.info.username)) {
         this.players.push(member.info);
+        this.players.sort((a, b) => a.username > b.username ? 1 : -1);
+        this.generateHandAreas();
       }
     });
 
@@ -77,6 +79,8 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
       for (const member of membersArray) {
         this.players.push(member[1]);
       }
+      this.players.sort((a, b) => a.username > b.username ? 1 : -1);
+      this.generateHandAreas();
     });
 
     this.pusherChannel.bind('pusher:member_removed', member => {
@@ -191,8 +195,8 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
         const createLibraryPromise = this.createLibrary(this.players[playerIndex].deck);
         createLibraryPromise.then(() => {
           for (const card of this.players[playerIndex].library) {
-            card.width = 146;
-            card.height = 204;
+            card.width = this.cardWidth;
+            card.height = this.cardHeight;
             card.x = 0;
             card.y = 0;
             card.deckId = this.players[playerIndex].deck._id;
@@ -263,5 +267,25 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   toggleNavbar() {
     this.showNavbar = !this.showNavbar;
+  }
+
+  generateHandAreas() {
+    let xStarts = [];
+    let yStarts = [];
+    if (this.players.length <= 2) {
+      xStarts = [(window.innerWidth - this.cardWidth * 7) / 2 , (window.innerWidth - this.cardWidth * 7) / 2];
+      yStarts = [0, window.innerHeight - this.cardHeight];
+    } else {
+      xStarts = [0, window.innerWidth - this.cardWidth * 7, window.innerWidth - this.cardWidth * 7, 0];
+      yStarts = [0, 0, window.innerHeight - this.cardHeight, window.innerHeight - this.cardHeight];
+    }
+    for (const player of this.players) {
+      player.handArea = {};
+      player.handArea.width = this.cardWidth * 7;
+      player.handArea.height = this.cardHeight;
+      const playerIndex = this.players.indexOf(player);
+      player.handArea.x = xStarts[playerIndex];
+      player.handArea.y = yStarts[playerIndex];
+    }
   }
 }

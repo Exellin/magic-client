@@ -12,6 +12,8 @@ export class BattlefieldComponent implements OnInit {
   @Input() pusherChannel;
   @Input() currentUsername;
   @Input() players;
+  @Input() cardWidth;
+  @Input() cardHeight;
   oldMouseX;
   oldMouseY;
   currentMouseX;
@@ -53,6 +55,7 @@ export class BattlefieldComponent implements OnInit {
       if (this.isDraggingCard) {
         const cardsToSend = [];
         for (const card of this.selected) {
+          this.hideCardInHand(card);
           const cardToSend = {
             x: card.x,
             y: card.y,
@@ -97,12 +100,12 @@ export class BattlefieldComponent implements OnInit {
           toast('You can only move up to 100 cards at a time', 5000);
           return;
         }
-        for (const cardToDrag of this.selected) {
-          cardToDrag.x += this.currentMouseX - this.oldMouseX;
-          cardToDrag.y += this.currentMouseY - this.oldMouseY;
+        for (const card of this.selected) {
+          card.x += this.currentMouseX - this.oldMouseX;
+          card.y += this.currentMouseY - this.oldMouseY;
 
-          this.keepCardInCanvas(cardToDrag);
-          this.moveCardToEndOfBattlefieldArray(cardToDrag);
+          this.keepCardInCanvas(card);
+          this.moveCardToEndOfBattlefieldArray(card);
         }
 
         this.oldMouseX = e.offsetX;
@@ -337,7 +340,7 @@ export class BattlefieldComponent implements OnInit {
     // Create an image for each card before drawing to canvas to prevent flickering
     this.battlefield.map(card => {
       card.img = new Image();
-      if (card.flipped) {
+      if (card.flipped || (card.revealedTo && card.revealedTo !== this.currentUsername)) {
         card.img.src = this.cardBackUrl;
       } else if (card.transformed) {
         card.img.src = card.transform.imageUrls.small;
@@ -360,16 +363,25 @@ export class BattlefieldComponent implements OnInit {
       if (card.selected) {
         this.canvasContext.strokeStyle = '#ffeb3b';
         this.canvasContext.lineWidth = 5;
-        this.canvasContext.rect(card.x, card.y, card.width, card.height);
-        this.canvasContext.stroke();
+        this.canvasContext.strokeRect(card.x, card.y, card.width, card.height);
       }
+    }
+
+    for (const player of this.players) {
+      if (player.username === this.currentUsername) {
+        this.canvasContext.strokeStyle = '#4286f4';
+        this.canvasContext.lineWidth = 1;
+      } else {
+        this.canvasContext.strokeStyle = '#000000';
+        this.canvasContext.lineWidth = 1;
+      }
+      this.canvasContext.strokeRect(player.handArea.x, player.handArea.y, player.handArea.width, player.handArea.height);
     }
 
     if (this.isSelecting) {
       this.canvasContext.strokeStyle = '#000000';
       this.canvasContext.lineWidth = 1;
-      this.canvasContext.rect(this.selectArea.x, this.selectArea.y, this.selectArea.width, this.selectArea.height);
-      this.canvasContext.stroke();
+      this.canvasContext.strokeRect(this.selectArea.x, this.selectArea.y, this.selectArea.width, this.selectArea.height);
     }
 
     requestAnimationFrame(() => this.animateCanvas());
@@ -386,6 +398,7 @@ export class BattlefieldComponent implements OnInit {
         const cardToMove = this.findCardInBattlefieldArray(cardObj);
         cardToMove.x = cardObj.x;
         cardToMove.y = cardObj.y;
+        this.hideCardInHand(cardToMove);
 
         this.moveCardToEndOfBattlefieldArray(cardToMove);
       }
@@ -395,8 +408,8 @@ export class BattlefieldComponent implements OnInit {
       for (const cardObj of obj.cardsToSend) {
         const cardToTap = this.findCardInBattlefieldArray(cardObj);
         cardToTap.tapped = cardObj.tapped;
-        cardToTap.width = cardObj.tapped ? 204 : 146;
-        cardToTap.height = cardObj.tapped ? 146 : 204;
+        cardToTap.width = cardObj.tapped ? this.cardHeight : this.cardWidth;
+        cardToTap.height = cardObj.tapped ? this.cardWidth : this.cardHeight;
 
         this.moveCardToEndOfBattlefieldArray(cardToTap);
       }
@@ -434,5 +447,16 @@ export class BattlefieldComponent implements OnInit {
   moveCardToEndOfBattlefieldArray(card) {
     this.battlefield.splice(this.battlefield.indexOf(card), 1);
     this.battlefield.push(card);
+  }
+
+  hideCardInHand(card) {
+    for (const player of this.players) {
+      if (this.rectOverlap(card, player.handArea)) {
+        card.revealedTo = player.username;
+        break;
+      } else {
+        card.revealedTo = null;
+      }
+    }
   }
 }
