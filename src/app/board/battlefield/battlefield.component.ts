@@ -53,23 +53,14 @@ export class BattlefieldComponent implements OnInit {
 
     window.addEventListener(('mouseup'), (e) => {
       if (this.isDraggingCard) {
-        const cardsToSend = [];
         for (const card of this.selected) {
           this.hideCardInHand(card);
           this.setCardImageSource(card);
-          const cardToSend = {
-            x: card.x,
-            y: card.y,
-            libraryId: card.libraryId,
-            deckId: card.deckId
-          };
-          cardsToSend.push(cardToSend);
         }
-
+        const properties = ['x', 'y', 'revealedTo', 'libraryId', 'deckId'];
         this.pusherChannel.trigger('client-move-cards', {
-          cardsToSend
+          cardsToSend: this.createCardsToSend(properties)
         });
-
         this.isDraggingCard = false;
       } else if (this.isSelecting) {
         if (this.selectArea.width < 0) {
@@ -131,19 +122,9 @@ export class BattlefieldComponent implements OnInit {
           for (const card of this.selected) {
             this.tapCard(card);
           }
-
-          const cardsToSend = [];
-          for (const card of this.selected) {
-            const cardToSend = {
-              tapped: card.tapped,
-              libraryId: card.libraryId,
-              deckId: card.deckId
-            };
-            cardsToSend.push(cardToSend);
-          }
-
+          const properties = ['tapped', 'libraryId', 'deckId'];
           this.pusherChannel.trigger('client-tap-cards', {
-            cardsToSend
+            cardsToSend: this.createCardsToSend(properties)
           });
         }
       }
@@ -159,19 +140,9 @@ export class BattlefieldComponent implements OnInit {
           for (const card of this.selected) {
             this.untapCard(card);
           }
-
-          const cardsToSend = [];
-          for (const card of this.selected) {
-            const cardToSend = {
-              tapped: card.tapped,
-              libraryId: card.libraryId,
-              deckId: card.deckId
-            };
-            cardsToSend.push(cardToSend);
-          }
-
+          const properties = ['tapped', 'libraryId', 'deckId'];
           this.pusherChannel.trigger('client-tap-cards', {
-            cardsToSend
+            cardsToSend: this.createCardsToSend(properties)
           });
         }
       }
@@ -188,19 +159,9 @@ export class BattlefieldComponent implements OnInit {
             this.flipCard(card);
             this.setCardImageSource(card);
           }
-
-          const cardsToSend = [];
-          for (const card of this.selected) {
-            const cardToSend = {
-              flipped: card.flipped,
-              libraryId: card.libraryId,
-              deckId: card.deckId
-            };
-            cardsToSend.push(cardToSend);
-          }
-
+          const properties = ['flipped', 'libraryId', 'deckId'];
           this.pusherChannel.trigger(('client-flip-cards'), {
-            cardsToSend
+            cardsToSend: this.createCardsToSend(properties)
           });
         }
       }
@@ -219,19 +180,9 @@ export class BattlefieldComponent implements OnInit {
               this.setCardImageSource(card);
             }
           }
-
-          const cardsToSend = [];
-          for (const card of this.selected) {
-            const cardToSend = {
-              transformed: card.transformed,
-              libraryId: card.libraryId,
-              deckId: card.deckId
-            };
-            cardsToSend.push(cardToSend);
-          }
-
+          const properties = ['transformed', 'libraryId', 'deckId'];
           this.pusherChannel.trigger(('client-transform-cards'), {
-            cardsToSend
+            cardsToSend: this.createCardsToSend(properties)
           });
         }
       }
@@ -368,8 +319,9 @@ export class BattlefieldComponent implements OnInit {
         const cardToMove = this.findCardInBattlefieldArray(cardObj);
         cardToMove.x = cardObj.x;
         cardToMove.y = cardObj.y;
-        this.hideCardInHand(cardToMove);
+        cardToMove.revealedTo = cardObj.revealedTo;
 
+        this.setCardImageSource(cardToMove);
         this.moveCardToEndOfBattlefieldArray(cardToMove);
       }
     });
@@ -436,5 +388,17 @@ export class BattlefieldComponent implements OnInit {
     } else {
       card.img.src = card.imageUrls.small;
     }
+  }
+
+  createCardsToSend(properties) {
+    const cardsToSend = [];
+    for (const card of this.selected) {
+      const cardToSend = {};
+      for (const property of properties) {
+        cardToSend[property] = card[property];
+      }
+      cardsToSend.push(cardToSend);
+    }
+    return cardsToSend;
   }
 }
