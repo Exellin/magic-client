@@ -25,6 +25,7 @@ export class BattlefieldComponent implements OnInit {
   selectArea = {x: 0, y: 0, width: 0, height: 0};
   selected = [];
   cardBackUrl = 'https://mtg.gamepedia.com/media/mtg.gamepedia.com/f/f8/Magic_card_back.jpg?version=4694fa6f8c95cfc758855c8ed4c4d0c0';
+  expandedCard;
 
   constructor() {}
 
@@ -55,7 +56,7 @@ export class BattlefieldComponent implements OnInit {
       if (this.isDraggingCard) {
         for (const card of this.selected) {
           this.hideCardInHand(card);
-          this.setCardImageSource(card);
+          this.setCardImageSource(card, 'small');
         }
         const properties = ['x', 'y', 'revealedTo', 'libraryId', 'deckId'];
         this.pusherChannel.trigger('client-move-cards', {
@@ -157,7 +158,7 @@ export class BattlefieldComponent implements OnInit {
         if (this.findCardOnCanvas(this.currentMouseX, this.currentMouseY)) {
           for (const card of this.selected) {
             this.flipCard(card);
-            this.setCardImageSource(card);
+            this.setCardImageSource(card, 'small');
           }
           const properties = ['flipped', 'libraryId', 'deckId'];
           this.pusherChannel.trigger(('client-flip-cards'), {
@@ -177,7 +178,7 @@ export class BattlefieldComponent implements OnInit {
           for (const card of this.selected) {
             if (card.layout === 'double-faced') {
               this.transformCard(card);
-              this.setCardImageSource(card);
+              this.setCardImageSource(card, 'small');
             }
           }
           const properties = ['transformed', 'libraryId', 'deckId'];
@@ -185,6 +186,22 @@ export class BattlefieldComponent implements OnInit {
             cardsToSend: this.createCardsToSend(properties)
           });
         }
+      }
+
+      // show expanded image of card
+      if (e.key === 'e') {
+        const cardToExpand = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
+        if (cardToExpand) {
+          this.expandedCard = {...cardToExpand};
+          this.setCardImageSource(this.expandedCard, 'large');
+        }
+      }
+    });
+
+    window.addEventListener(('keyup'), (e) => {
+      // hide expanded image of card
+      if (e.key === 'e') {
+        this.expandedCard = null;
       }
     });
   }
@@ -305,6 +322,10 @@ export class BattlefieldComponent implements OnInit {
       this.canvasContext.strokeRect(this.selectArea.x, this.selectArea.y, this.selectArea.width, this.selectArea.height);
     }
 
+    if (this.expandedCard) {
+      this.canvasContext.drawImage(this.expandedCard.img, 0, 0, 401, 551);
+    }
+
     requestAnimationFrame(() => this.animateCanvas());
   }
 
@@ -321,7 +342,7 @@ export class BattlefieldComponent implements OnInit {
         cardToMove.y = cardObj.y;
         cardToMove.revealedTo = cardObj.revealedTo;
 
-        this.setCardImageSource(cardToMove);
+        this.setCardImageSource(cardToMove, 'small');
         this.moveCardToEndOfBattlefieldArray(cardToMove);
       }
     });
@@ -342,7 +363,7 @@ export class BattlefieldComponent implements OnInit {
         const cardToFlip = this.findCardInBattlefieldArray(cardObj);
         cardToFlip.flipped = cardObj.flipped;
 
-        this.setCardImageSource(cardToFlip);
+        this.setCardImageSource(cardToFlip, 'small');
         this.moveCardToEndOfBattlefieldArray(cardToFlip);
       }
     });
@@ -352,7 +373,7 @@ export class BattlefieldComponent implements OnInit {
         const cardToTransform = this.findCardInBattlefieldArray(cardObj);
         cardToTransform.transformed = cardObj.transformed;
 
-        this.setCardImageSource(cardToTransform);
+        this.setCardImageSource(cardToTransform, 'small');
         this.moveCardToEndOfBattlefieldArray(cardToTransform);
       }
     });
@@ -380,13 +401,13 @@ export class BattlefieldComponent implements OnInit {
     }
   }
 
-  setCardImageSource(card) {
+  setCardImageSource(card, size) {
     if (card.flipped || (card.revealedTo && card.revealedTo !== this.currentUsername)) {
       card.img.src = this.cardBackUrl;
     } else if (card.transformed) {
-      card.img.src = card.transform.imageUrls.small;
+      card.img.src = card.transform.imageUrls[size];
     } else {
-      card.img.src = card.imageUrls.small;
+      card.img.src = card.imageUrls[size];
     }
   }
 
