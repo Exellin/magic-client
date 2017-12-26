@@ -162,28 +162,6 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  convertLibraryToCardsWithIds(library) {
-    const cardArray = [];
-    for (const card of library) {
-      const cardToSend = [card.libraryId, card.multiverseid];
-      cardArray.push(cardToSend);
-    }
-    return cardArray;
-  }
-
-  shuffleLibrary(username, library) {
-    // Durstenfeld shuffle from https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm
-    for (let i = library.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [library[i], library[j]] = [library[j], library[i]];
-    }
-    const cardArray = this.convertLibraryToCardsWithIds(library);
-    this.pusherChannel.trigger('client-shuffle-library', {
-      cardArray,
-      username
-    });
-  }
-
   assignDeck(deck) {
     const playerIndex = this.players.findIndex(player => player.username === deck.owner.username);
 
@@ -227,19 +205,6 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.pusherChannel.bind('client-draw-card', obj => {
       const playerIndex = this.players.findIndex(player => player.username === obj.username);
       this.players[playerIndex].hand.push(this.players[playerIndex].library.shift());
-    });
-
-    this.pusherChannel.bind('client-shuffle-library', obj => {
-      const library = [];
-      const playerIndex = this.players.findIndex(player => player.username === obj.username);
-
-      for (const card of obj.cardArray) {
-        const match = this.players[playerIndex].deck.cards.find(cardInDeck => card[1] === cardInDeck.multiverseid);
-        match.libraryId = card[0];
-        library.push(match);
-      }
-
-      this.players[playerIndex].library = library;
     });
 
     this.pusherChannel.bind('client-place-card-on-battlefield', obj => {

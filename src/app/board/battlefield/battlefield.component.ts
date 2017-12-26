@@ -197,6 +197,29 @@ export class BattlefieldComponent implements OnInit {
           this.setCardImageSource(this.expandedCard, 'large');
         }
       }
+
+      // shuffle cards
+      if (e.key === 'h') {
+        if (this.selected.length > 100) {
+          toast('You can only shuffle up to 100 cards at a time', 5000);
+          return;
+        }
+
+        // Durstenfeld shuffle from https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm
+        for (let i = this.selected.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [this.selected[i], this.selected[j]] = [this.selected[j], this.selected[i]];
+        }
+
+        for (const card of this.selected) {
+          this.moveCardToEndOfBattlefieldArray(card);
+        }
+
+        const properties = ['libraryId', 'deckId'];
+        this.pusherChannel.trigger('client-shuffle-cards', {
+          cardsToSend: this.createCardsToSend(properties)
+        });
+      }
     });
 
     window.addEventListener(('keyup'), (e) => {
@@ -376,6 +399,13 @@ export class BattlefieldComponent implements OnInit {
 
         this.setCardImageSource(cardToTransform, 'small');
         this.moveCardToEndOfBattlefieldArray(cardToTransform);
+      }
+    });
+
+    this.pusherChannel.bind('client-shuffle-cards', obj => {
+      for (const cardObj of obj.cardsToSend) {
+        const cardToShuffle = this.findCardInBattlefieldArray(cardObj);
+        this.moveCardToEndOfBattlefieldArray(cardToShuffle);
       }
     });
   }
