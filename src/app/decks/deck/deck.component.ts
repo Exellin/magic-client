@@ -237,17 +237,6 @@ export class DeckComponent implements OnInit {
 
   addCardToDeck(card, quantity) {
     card.quantity = quantity;
-    card.imageUrls = {};
-    const imageSizes = ['small', 'normal', 'large'];
-
-    for (const size of imageSizes) {
-      if (card.number) {
-        card.imageUrls[size] = `https://img.scryfall.com/cards/${size}/en/${card.setCode.toLowerCase()}/${card.number}.jpg`;
-      } else {
-        card.imageUrls[size] = `http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=${card.multiverseid}&type=card`;
-      }
-    }
-
     this.deck.cards.push(card);
   }
 

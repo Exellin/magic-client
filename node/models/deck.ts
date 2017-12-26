@@ -16,11 +16,6 @@ const DeckSchema = mongoose.Schema({
         ref: 'Card'
       },
       quantity: { type: Number, required: true },
-      imageUrls: {
-        small: { type: String, required: true },
-        normal: { type: String, required: true },
-        large: { type: String, required: true }
-      }
     }
   ]
 });

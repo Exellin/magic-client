@@ -113,8 +113,12 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
   createLibrary(deck) {
     return new Promise((resolve, reject) => {
       let id = 0;
+      const totalCards = deck.cards.reduce((total, card) => {
+        return total + card.quantity;
+      }, 0);
       for (const card of deck.cards) {
         const hasTransformPromise = this.checkForTransform(card);
+        this.assignImageUrls(card);
 
         hasTransformPromise.then(() => {
           for (let i = 0; i < card.quantity; i++) {
@@ -125,8 +129,10 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
             const playerIndex = this.players.findIndex(player => player.username === deck.owner.username);
             this.players[playerIndex].library.push(cardWithId);
             id++;
+            if (id === totalCards) {
+              resolve();
+            }
           }
-          resolve();
         });
 
         hasTransformPromise.catch((err) => {
@@ -142,17 +148,7 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
       this.cardsService.getCardFromDatabase(card.names[1]).subscribe(
         res => {
           card.transform = res.data;
-          card.transform.imageUrls = {};
-          const imageSizes = ['small', 'normal', 'large'];
-          for (const size of imageSizes) {
-            if (card.number) {
-              card.transform.imageUrls[size] =
-              `https://img.scryfall.com/cards/${size}/en/${card.transform.setCode.toLowerCase()}/${card.transform.number}.jpg`;
-            } else {
-              card.transform.imageUrls[size] =
-              `http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=${card.transform.multiverseid}&type=card`;
-            }
-          }
+          this.assignImageUrls(card.transform);
           resolve();
         },
         err => {
@@ -160,6 +156,18 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       );
     });
+  }
+
+  assignImageUrls(card) {
+    card.imageUrls = {};
+    card.imageUrls.small = `http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=${card.multiverseid}&type=card`;
+    if (card.number) {
+      card.imageUrls.large =
+      `https://img.scryfall.com/cards/large/en/${card.setCode.toLowerCase()}/${card.number}.jpg`;
+    } else {
+      card.imageUrls.large =
+      `http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=${card.multiverseid}&type=card`;
+    }
   }
 
   assignDeck(deck) {
