@@ -193,6 +193,7 @@ export class BattlefieldComponent implements OnInit {
         const cardToExpand = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
         if (cardToExpand) {
           this.expandedCard = {...cardToExpand};
+          this.expandedCard.img = new Image();
           this.setCardImageSource(this.expandedCard, 'large');
         }
       }
