@@ -1,1 +1,9 @@
 <canvas></canvas>
+
+<div id='searchModal' class='modal' materialize='modal' [materializeParams]='[{dismissible: true}]' [materializeActions]='searchModal'>
+  <div class='modal-content'>
+    <span *ngFor='let card of searching'>
+      <img src='{{card.imageUrls.small}}' (click)='selectCardFromSearch(card)'>
+    </span>
+  </div>
+</div>
