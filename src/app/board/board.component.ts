@@ -205,21 +205,6 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.pusherChannel.bind('client-assign-deck-to-player', obj => {
       this.assignDeck(obj.deck);
     });
-
-    this.pusherChannel.bind('client-update-player-data', obj => {
-      this.players = obj.players;
-    });
-
-    this.pusherChannel.bind('client-draw-card', obj => {
-      const playerIndex = this.players.findIndex(player => player.username === obj.username);
-      this.players[playerIndex].hand.push(this.players[playerIndex].library.shift());
-    });
-
-    this.pusherChannel.bind('client-place-card-on-battlefield', obj => {
-      const playerIndex = this.players.findIndex(player => player.username === obj.username);
-      this.players[playerIndex].hand.splice(this.players[playerIndex].hand.indexOf(obj.card), 1);
-      this.battlefield.push(obj.card);
-    });
   }
 
   setCurrentUserDecks(username) {
