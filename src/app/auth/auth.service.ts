@@ -32,11 +32,11 @@ export class AuthService {
   }
 
   register(user): Observable<any> {
-    return this.http.post('http://localhost:3000/api/user', user, this.setHeaders()).map(res => res.json());
+    return this.http.post('api/user', user, this.setHeaders()).map(res => res.json());
   }
 
   login(credentials): Observable<any> {
-    return this.http.post('http://localhost:3000/api/login', credentials, this.setHeaders()).map(res => res.json());
+    return this.http.post('api/login', credentials, this.setHeaders()).map(res => res.json());
   }
 
   storeToken(token) {

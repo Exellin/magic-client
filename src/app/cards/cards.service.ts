@@ -22,10 +22,10 @@ export class CardsService {
   }
 
   getCardFromDatabase(cardName): Observable<any> {
-    return this.http.get(`http://localhost:3000/api/cards/${cardName}`, this.setHeaders()).map(res => res.json());
+    return this.http.get(`api/cards/${cardName}`, this.setHeaders()).map(res => res.json());
   }
 
   saveCard(card): Observable<any> {
-    return this.http.post('http://localhost:3000/api/card', card, this.setHeaders()).map(res => res.json());
+    return this.http.post('api/card', card, this.setHeaders()).map(res => res.json());
   }
 }

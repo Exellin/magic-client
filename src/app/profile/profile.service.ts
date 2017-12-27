@@ -10,6 +10,6 @@ export class ProfileService {
   constructor(private http: Http) {}
 
   getUser(username): Observable<any> {
-    return this.http.get(`http://localhost:3000/api/user/${username}`).map(res => res.json());
+    return this.http.get(`api/user/${username}`).map(res => res.json());
   }
 }

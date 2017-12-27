@@ -49,7 +49,7 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.gameId = this.findOrCreateId();
 
     const pusher = new Pusher(environment.appKey, {
-      authEndpoint: 'http://localhost:3000/api/pusher/auth',
+      authEndpoint: 'api/pusher/auth',
       auth: {
         headers: {
           'Authorization': localStorage.getItem('token')

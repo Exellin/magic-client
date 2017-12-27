@@ -15,14 +15,14 @@ export class DeckService {
   }
 
   createDeck(deck): Observable<any> {
-    return this.http.post('http://localhost:3000/api/deck', deck, this.setHeaders()).map(res => res.json());
+    return this.http.post('api/deck', deck, this.setHeaders()).map(res => res.json());
   }
 
   getDeck(deckId): Observable<any> {
-    return this.http.get(`http://localhost:3000/api/decks/${deckId}`).map(res => res.json());
+    return this.http.get(`api/decks/${deckId}`).map(res => res.json());
   }
 
   updateDeck(deck): Observable<any> {
-    return this.http.put(`http://localhost:3000/api/decks/${deck._id}`, deck, this.setHeaders());
+    return this.http.put(`api/decks/${deck._id}`, deck, this.setHeaders());
   }
 }
