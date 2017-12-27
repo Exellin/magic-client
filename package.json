@@ -6,6 +6,7 @@
     "ng": "ng",
     "build": "ng build --prod",
     "start": "node dist/server/app.js",
+    "postinstall": "tsc -p server && ng build -aot -prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
