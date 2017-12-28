@@ -208,20 +208,22 @@ export class BattlefieldComponent implements OnInit {
           return;
         }
 
-        // Durstenfeld shuffle from https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm
-        for (let i = this.selected.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [this.selected[i], this.selected[j]] = [this.selected[j], this.selected[i]];
-        }
+        if (this.findCardOnCanvas(this.currentMouseX, this.currentMouseY)) {
+          // Durstenfeld shuffle from https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm
+          for (let i = this.selected.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [this.selected[i], this.selected[j]] = [this.selected[j], this.selected[i]];
+          }
 
-        for (const card of this.selected) {
-          this.moveCardToEndOfBattlefieldArray(card);
-        }
+          for (const card of this.selected) {
+            this.moveCardToEndOfBattlefieldArray(card);
+          }
 
-        const properties = ['libraryId', 'deckId'];
-        this.pusherChannel.trigger('client-shuffle-cards', {
-          cardsToSend: this.createCardsToSend(this.selected, properties)
-        });
+          const properties = ['libraryId', 'deckId'];
+          this.pusherChannel.trigger('client-shuffle-cards', {
+            cardsToSend: this.createCardsToSend(this.selected, properties)
+          });
+        }
       }
 
       // search through cards
