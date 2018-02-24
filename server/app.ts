@@ -1,5 +1,4 @@
 import * as bodyParser from 'body-parser';
-import * as cors from 'cors';
 import * as dotenv from 'dotenv';
 import * as express from 'express';
 import * as mongoose from 'mongoose';
@@ -13,7 +12,6 @@ dotenv.load({ path: '.env' });
 app.set('port', process.env.PORT || 3000);
 
 app.use('/', express.static(path.join(__dirname, '../public')));
-app.use(cors());
 app.use(bodyParser.json({ limit: '1mb' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 
