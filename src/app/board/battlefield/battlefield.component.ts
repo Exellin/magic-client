@@ -88,8 +88,8 @@ export class BattlefieldComponent implements OnInit {
     });
 
     window.addEventListener(('mousemove'), (e) => {
-      this.currentMouseX = e.offsetX;
-      this.currentMouseY = e.offsetY;
+      this.currentMouseX = e.clientX;
+      this.currentMouseY = e.clientY;
 
       if (this.selected.length > 0 && this.isDraggingCard) {
         if (this.selected.length > 100) {
