@@ -61,7 +61,7 @@ export class BattlefieldComponent implements OnInit {
           this.hideCardInHand(card);
           this.setCardImageSource(card, 'small');
         }
-        const properties = ['x', 'y', 'revealedTo', 'libraryId', 'deckId'];
+        const properties = ['x', 'y', 'revealedTo', 'battlefieldId'];
         this.pusherChannel.trigger('client-move-cards', {
           cardsToSend: this.createCardsToSend(this.selected, properties)
         });
@@ -126,7 +126,7 @@ export class BattlefieldComponent implements OnInit {
           for (const card of this.selected) {
             this.tapCard(card);
           }
-          const properties = ['tapped', 'libraryId', 'deckId'];
+          const properties = ['tapped', 'battlefieldId'];
           this.pusherChannel.trigger('client-tap-cards', {
             cardsToSend: this.createCardsToSend(this.selected, properties)
           });
@@ -144,7 +144,7 @@ export class BattlefieldComponent implements OnInit {
           for (const card of this.selected) {
             this.untapCard(card);
           }
-          const properties = ['tapped', 'libraryId', 'deckId'];
+          const properties = ['tapped', 'battlefieldId'];
           this.pusherChannel.trigger('client-tap-cards', {
             cardsToSend: this.createCardsToSend(this.selected, properties)
           });
@@ -163,7 +163,7 @@ export class BattlefieldComponent implements OnInit {
             this.flipCard(card);
             this.setCardImageSource(card, 'small');
           }
-          const properties = ['flipped', 'libraryId', 'deckId'];
+          const properties = ['flipped', 'battlefieldId'];
           this.pusherChannel.trigger(('client-flip-cards'), {
             cardsToSend: this.createCardsToSend(this.selected, properties)
           });
@@ -184,7 +184,7 @@ export class BattlefieldComponent implements OnInit {
               this.setCardImageSource(card, 'small');
             }
           }
-          const properties = ['transformed', 'libraryId', 'deckId'];
+          const properties = ['transformed', 'battlefieldId'];
           this.pusherChannel.trigger(('client-transform-cards'), {
             cardsToSend: this.createCardsToSend(this.selected, properties)
           });
@@ -219,7 +219,7 @@ export class BattlefieldComponent implements OnInit {
             this.moveCardToEndOfBattlefieldArray(card);
           }
 
-          const properties = ['libraryId', 'deckId'];
+          const properties = ['battlefieldId'];
           this.pusherChannel.trigger('client-shuffle-cards', {
             cardsToSend: this.createCardsToSend(this.selected, properties)
           });
@@ -434,9 +434,7 @@ export class BattlefieldComponent implements OnInit {
   }
 
   findCardInBattlefieldArray(passedCard) {
-    return this.battlefield.find(card => {
-      return (card.deckId === passedCard.deckId) && (card.libraryId === passedCard.libraryId);
-    });
+    return this.battlefield.find(card => card.battlefieldId === passedCard.battlefieldId);
   }
 
   moveCardToEndOfBattlefieldArray(card) {
@@ -479,7 +477,7 @@ export class BattlefieldComponent implements OnInit {
 
   selectCardFromSearch(card) {
     this.moveCardToEndOfBattlefieldArray(card);
-    const properties = ['libraryId', 'deckId'];
+    const properties = ['battlefieldId'];
     this.pusherChannel.trigger('client-select-card', {
       cardsToSend: this.createCardsToSend([card], properties)
     });

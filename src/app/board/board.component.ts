@@ -122,12 +122,8 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
 
         hasTransformPromise.then(() => {
           for (let i = 0; i < card.quantity; i++) {
-            const cardWithId = {
-              ...card,
-              libraryId: id
-            };
             const playerIndex = this.players.findIndex(player => player.username === deck.owner.username);
-            this.players[playerIndex].library.push(cardWithId);
+            this.players[playerIndex].library.push({...card});
             id++;
             if (id === totalCards) {
               resolve();
@@ -186,7 +182,7 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
             card.y = 0;
             card.img = new Image();
             card.img.src = card.imageUrls.small;
-            card.deckId = this.players[playerIndex].deck._id;
+            card.battlefieldId = this.battlefield.length;
             this.battlefield.push(card);
           }
         });
