@@ -7,3 +7,15 @@
     </span>
   </div>
 </div>
+
+<div id='tokenModal' class='modal' materialize='modal' [materializeParams]='[{dismissible: true}]' [materializeActions]='tokenModal'>
+  <div class='modal-content'>
+    <div class='input-field'>
+      <label for='copies'>Copies</label>
+      <input id='copies' type='number' name='copies' class='validate' min=1 max=99 [(ngModel)]='copies' required>
+    </div>
+    <span *ngFor='let card of tokens'>
+      <img src='{{card.image_uris.small}}' (click)='selectTokenToCreate(card)'>
+    </span>
+  </div>
+</div>

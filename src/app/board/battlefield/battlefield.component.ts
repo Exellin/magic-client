@@ -2,6 +2,8 @@ import { Component, EventEmitter, OnInit, Input } from '@angular/core';
 import { toast } from 'angular2-materialize';
 import { MaterializeAction } from 'angular2-materialize';
 
+import { CardsService } from '../../cards/cards.service';
+
 @Component({
   selector: 'app-battlefield',
   templateUrl: './battlefield.component.html',
@@ -28,9 +30,12 @@ export class BattlefieldComponent implements OnInit {
   cardBackUrl = 'https://mtg.gamepedia.com/media/mtg.gamepedia.com/f/f8/Magic_card_back.jpg?version=4694fa6f8c95cfc758855c8ed4c4d0c0';
   expandedCard;
   searchModal = new EventEmitter<string|MaterializeAction>();
+  tokenModal = new EventEmitter<string|MaterializeAction>();
+  tokenCopies = 1;
   searching;
+  tokens;
 
-  constructor() {}
+  constructor(private cardsService: CardsService) {}
 
   ngOnInit() {
     this.buildCanvas();
@@ -238,6 +243,26 @@ export class BattlefieldComponent implements OnInit {
           this.searchModal.emit({action: 'modal', params: ['open']});
         }
       }
+
+      // search through tokens of the cards set
+      if (e.key === 'g') {
+        const cardToMakeTokenFor = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
+        if (cardToMakeTokenFor) {
+          const tokenSet = 't' + cardToMakeTokenFor.setCode.toLowerCase();
+          this.cardsService.getSetFromApi(tokenSet).subscribe(
+            res => {
+              this.generateTokenModal(res.search_uri);
+            },
+            err => {
+              if (err.statusText === 'Not Found') {
+                toast('There are no tokens in this set', 5000);
+              } else {
+                console.log(err);
+              }
+            }
+          );
+        }
+      }
     });
 
     window.addEventListener(('keyup'), (e) => {
@@ -246,6 +271,18 @@ export class BattlefieldComponent implements OnInit {
         this.expandedCard = null;
       }
     });
+  }
+
+  generateTokenModal(search_uri) {
+    this.cardsService.getCardsInSet(search_uri).subscribe(
+      res => {
+        this.tokens = res.data;
+        this.tokenModal.emit({action: 'modal', params: ['open']});
+      },
+      err => {
+        console.log(err);
+      }
+    );
   }
 
   keepCardInCanvas(card) {
@@ -433,6 +470,10 @@ export class BattlefieldComponent implements OnInit {
         this.moveCardToEndOfBattlefieldArray(cardToShuffle);
       }
     });
+
+    this.pusherChannel.bind('client-create-tokens', obj => {
+      this.createTokens(obj.copies, obj.card);
+    });
   }
 
   findCardInBattlefieldArray(passedCard) {
@@ -482,6 +523,34 @@ export class BattlefieldComponent implements OnInit {
     const properties = ['battlefieldId'];
     this.pusherChannel.trigger('client-select-card', {
       cardsToSend: this.createCardsToSend([card], properties)
+    });
+  }
+
+  createTokens(copies, card) {
+    for (let i = 0; i < copies; i++) {
+      const newToken = {
+        ...card,
+        width: this.cardWidth,
+        height: this.cardHeight,
+        x: 0,
+        y: 0,
+        layout: 'token',
+        battlefieldId: this.battlefield.length,
+        imageUrls: card.image_uris,
+        img: new Image()
+      };
+
+      this.setCardImageSource(newToken, 'small');
+      this.battlefield.push(newToken);
+    }
+  }
+
+  selectTokenToCreate(card) {
+    this.createTokens(this.tokenCopies, card);
+
+    this.pusherChannel.trigger('client-create-tokens', {
+      copies: this.tokenCopies,
+      card: card
     });
   }
 }
