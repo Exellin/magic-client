@@ -233,8 +233,10 @@ export class BattlefieldComponent implements OnInit {
           return;
         }
 
-        this.searching = this.selected;
-        this.searchModal.emit({action: 'modal', params: ['open']});
+        if (this.findCardOnCanvas(this.currentMouseX, this.currentMouseY)) {
+          this.searching = this.selected;
+          this.searchModal.emit({action: 'modal', params: ['open']});
+        }
       }
     });
 
