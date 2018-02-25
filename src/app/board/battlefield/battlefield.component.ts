@@ -247,20 +247,9 @@ export class BattlefieldComponent implements OnInit {
       // search through tokens of the cards set
       if (e.key === 'g') {
         const cardToMakeTokenFor = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
-        if (cardToMakeTokenFor) {
-          const tokenSet = 't' + cardToMakeTokenFor.setCode.toLowerCase();
-          this.cardsService.getSetFromApi(tokenSet).subscribe(
-            res => {
-              this.generateTokenModal(res.search_uri);
-            },
-            err => {
-              if (err.statusText === 'Not Found') {
-                toast('There are no tokens in this set', 5000);
-              } else {
-                console.log(err);
-              }
-            }
-          );
+
+        if (cardToMakeTokenFor && cardToMakeTokenFor.printings) {
+          this.findValidTokenSet(cardToMakeTokenFor);
         }
       }
     });
@@ -270,6 +259,27 @@ export class BattlefieldComponent implements OnInit {
       if (e.key === 'e') {
         this.expandedCard = null;
       }
+    });
+  }
+
+  async findValidTokenSet(cardToMakeTokenFor) {
+    const results = await Promise.all(cardToMakeTokenFor.printings.map((set) => {
+      const tokenSet = 't' + set.toLowerCase();
+      return this.getTokensUrl(tokenSet);
+    }));
+    this.generateTokenModal(results.find(url => url !== null));
+  }
+
+  getTokensUrl(tokenSet) {
+    return new Promise(resolve => {
+      this.cardsService.getSetFromApi(tokenSet).subscribe(
+        res => {
+          resolve(res.search_uri);
+        },
+        err => {
+          resolve(null);
+        }
+      );
     });
   }
 
