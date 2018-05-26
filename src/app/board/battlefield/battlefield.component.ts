@@ -249,7 +249,7 @@ export class BattlefieldComponent implements OnInit {
         const cardToMakeTokenFor = this.findCardOnCanvas(this.currentMouseX, this.currentMouseY);
 
         if (cardToMakeTokenFor && cardToMakeTokenFor.printings) {
-          this.findValidTokenSet(cardToMakeTokenFor);
+          this.getTokensUrl(cardToMakeTokenFor.printings, 0);
         }
       }
     });
@@ -262,25 +262,18 @@ export class BattlefieldComponent implements OnInit {
     });
   }
 
-  async findValidTokenSet(cardToMakeTokenFor) {
-    const results = await Promise.all(cardToMakeTokenFor.printings.map((set) => {
-      const tokenSet = 't' + set.toLowerCase();
-      return this.getTokensUrl(tokenSet);
-    }));
-    this.generateTokenModal(results.find(url => url !== null));
-  }
-
-  getTokensUrl(tokenSet) {
-    return new Promise(resolve => {
-      this.cardsService.getSetFromApi(tokenSet).subscribe(
-        res => {
-          resolve(res.search_uri);
-        },
-        err => {
-          resolve(null);
+  getTokensUrl(tokenSets, index) {
+    const tokenSet = 't' + tokenSets[index].toLowerCase();
+    this.cardsService.getSetFromApi(tokenSet).subscribe(
+      res => {
+        this.generateTokenModal(res.search_uri);
+      },
+      err => {
+        if (index < tokenSets.length - 1) {
+          this.getTokensUrl(tokenSets, index + 1);
         }
-      );
-    });
+      }
+    );
   }
 
   generateTokenModal(search_uri) {
